@@ -4,7 +4,7 @@
 
 from tensorflow.keras.layers import UpSampling2D, Concatenate
 from tensorflow.keras.models import Model
-from tensorflow.keras.applications.resnet import ResNet50
+from tensorflow.keras.applications.resnet50 import ResNet50
 
 from yolo4.models.layers import yolo4_predictions, yolo4lite_predictions, tiny_yolo4_predictions, tiny_yolo4lite_predictions
 
