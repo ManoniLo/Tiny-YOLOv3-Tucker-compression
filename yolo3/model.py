@@ -15,6 +15,7 @@ from yolo3.models.yolo3_darknet import (
     yolo3_body,
     custom_tiny_yolo3_body,
     custom_tiny_yolo3_body_no_leaky,
+    custom_tiny_yolo3_body_no_leaky_scaled,
     custom_tiny_yolo4_body,
     yolo3lite_body,
     tiny_yolo3lite_body,
@@ -260,6 +261,11 @@ yolo3_tiny_model_map = {
     "tiny_yolo3_darknet": [custom_tiny_yolo3_body, 20, "weights/yolov3-tiny.h5"],
     "tiny_yolo3_darknet_no_leaky": [
         custom_tiny_yolo3_body_no_leaky,
+        20,
+        "weights/yolov3-tiny.h5",
+    ],
+    "tiny_yolo3_darknet_no_leaky_scaled": [
+        custom_tiny_yolo3_body_no_leaky_scaled,
         20,
         "weights/yolov3-tiny.h5",
     ],
