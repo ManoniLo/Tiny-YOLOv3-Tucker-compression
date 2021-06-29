@@ -395,7 +395,12 @@ def custom_tiny_yolo3_body_no_leaky_scaled(
     # TODO: get darknet class number from class file
     num_classes_coco = 80
     base_model = tiny_yolo3_body_no_leaky_scaled(inputs, num_anchors, num_classes_coco)
-    base_model.load_weights(weights_path, by_name=False)
+    try:
+        base_model.load_weights(weights_path, by_name=False)
+    except Exception as ex:
+        print(ex)
+        print("Could not load weights")
+        pass
     print("Load weights {}.".format(weights_path))
 
     # get conv output in original network
