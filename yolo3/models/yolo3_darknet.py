@@ -25,6 +25,7 @@ from yolo3.models.layers import (
     DarknetConv2D,
     DarknetConv2D_BN,
     DarknetConv2D_BN_Leaky,
+    DarknetConv2D_BN_custom_Leaky,
     Depthwise_Separable_Conv2D_BN_Leaky,
     Darknet_Depthwise_Separable_Conv2D_BN_Leaky,
 )
