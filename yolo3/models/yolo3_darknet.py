@@ -351,7 +351,7 @@ def tiny_yolo3_custom_leaky_body(inputs, num_anchors, num_classes):
     )(x1)
 
     # upsample fpn merge for feature map 1 & 2
-    x2 = compose(DarknetConv2D_BN_custom_Leaky(128, (1, 1)), UpSampling2D(2))(x1)
+    x2 = compose(DarknetConv2D_BN_custom_Leaky(128, (1, 1), name = "conv2d_10"), UpSampling2D(2))(x1)
 
     # feature map 2 output (26x26 for 416 input)
     y2 = compose(
