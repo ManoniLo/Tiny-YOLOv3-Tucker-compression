@@ -7,7 +7,7 @@ from functools import wraps, reduce
 
 import tensorflow.keras.backend as K
 from tensorflow.keras.layers import Conv2D, DepthwiseConv2D, Concatenate, MaxPooling2D
-from tensorflow.keras.layers import LeakyReLU, UpSampling2D, ReLU
+from tensorflow.keras.layers import LeakyReLU, UpSampling2D, ReLU, Add
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.regularizers import l2
 
@@ -109,7 +109,7 @@ def custom_Leaky_ReLU(input_tensor):
   neg_relu = ReLU(max_value = 0.0, negative_slope = 0.1, threshold = 0)(input_tensor)
   #neg_relu = ReLU()(input_tensor)
 
-  leaky_relu = tensorflow.keras.layers.Add()([pos_relu, neg_relu])
+  leaky_relu = Add()([pos_relu, neg_relu])
   return leaky_relu
 
 
