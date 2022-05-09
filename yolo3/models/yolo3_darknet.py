@@ -346,7 +346,7 @@ def tiny_yolo3_custom_leaky_body(inputs, num_anchors, num_classes):
 
     # feature map 1 output (13x13 for 416 input)
     y1 = compose(
-        DarknetConv2D_BN_custom_Leaky(512, (3, 3)),
+        DarknetConv2D_BN_custom_Leaky(512, (3, 3), name = "anchor_1"),
         DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1"),
     )(x1)
 
@@ -356,7 +356,7 @@ def tiny_yolo3_custom_leaky_body(inputs, num_anchors, num_classes):
     # feature map 2 output (26x26 for 416 input)
     y2 = compose(
         Concatenate(),
-        DarknetConv2D_BN_custom_Leaky(256, (3, 3)),
+        DarknetConv2D_BN_custom_Leaky(256, (3, 3), name = "anchor_2"),
         DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_2"),
     )([x2, f2])
 
