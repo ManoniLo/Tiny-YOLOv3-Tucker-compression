@@ -14,6 +14,7 @@ from tensorflow.keras.optimizers import Adam
 from yolo3.models.yolo3_darknet import (
     yolo3_body,
     custom_tiny_yolo3_body,
+    custom_leaky_tiny_yolo3_body,
     custom_tiny_yolo3_body_no_leaky,
     custom_tiny_yolo4_body,
     yolo3lite_body,
@@ -263,6 +264,7 @@ yolo3_tiny_model_map = {
         20,
         "weights/yolov3-tiny.h5",
     ],
+    "tiny_yolo3_darknet_custom_leaky": [custom_leaky_tiny_yolo3_body, 20, "weights/yolov3-tiny.h5"],
     # Doesn't have pretrained weights, so no need to return backbone length
     "tiny_yolo3_darknet_lite": [tiny_yolo3lite_body, 0, None],
     "tiny_yolo3_vgg16": [tiny_yolo3_vgg16_body, 19, None],
