@@ -103,6 +103,16 @@ def Depthwise_Separable_Conv2D_BN_Leaky(filters, kernel_size=(3, 3), block_id_st
         LeakyReLU(alpha=0.1, name="conv_pw_%s_leaky_relu" % block_id_str),
     )
 
+# Custom defined Leaky-Relu using standard Relu activations...........................
+def custom_Leaky_ReLU(input_tensor):
+  pos_relu = ReLU()(input_tensor)
+  neg_relu = ReLU(max_value = 0.0, negative_slope = 0.1, threshold = 0)(input_tensor)
+  #neg_relu = ReLU()(input_tensor)
+
+  leaky_relu = tf.keras.layers.Add()([pos_relu, neg_relu])
+  return leaky_relu
+
+
 
 def DarknetConv2D_BN_Leaky(*args, **kwargs):
     """Darknet Convolution2D followed by CustomBatchNormalization and LeakyReLU."""
@@ -113,6 +123,19 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
         CustomBatchNormalization(),
         LeakyReLU(alpha=0.1),
     )
+
+def DarknetConv2D_BN_custom_Leaky(*args, **kwargs):
+    """Darknet Convolution2D followed by CustomBatchNormalization and LeakyReLU."""
+    no_bias_kwargs = {"use_bias": False}
+    no_bias_kwargs.update(kwargs)
+
+    out = compose (
+      DarknetConv2D(*args, **no_bias_kwargs),
+      CustomBatchNormalization(),
+      custom_Leaky_ReLU,
+      )
+
+    return out
 
 
 def DarknetConv2D_BN(*args, **kwargs):
