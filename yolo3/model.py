@@ -91,6 +91,11 @@ from yolo3.models.yolo3_resnet50 import (
     tiny_yolo3lite_resnet50_body,
 )
 
+# Added by Lorenzo............
+from yolo3.models.yolo3_resnet18 import (
+    tiny_yolo3_resnet18_body
+)
+
 # from yolo3.models.yolo3_resnet50v2 import yolo3_resnet50v2_body, yolo3lite_resnet50v2_body, yolo3lite_spp_resnet50v2_body, tiny_yolo3_resnet50v2_body, tiny_yolo3lite_resnet50v2_body
 
 
@@ -248,6 +253,8 @@ yolo3_tiny_model_map = {
     "tiny_yolo3_peleenet": [tiny_yolo3_peleenet_body, 366, None],
     "tiny_yolo3_peleenet_lite": [tiny_yolo3lite_peleenet_body, 366, None],
     "tiny_yolo3_peleenet_ultralite": [tiny_yolo3_ultralite_peleenet_body, 366, None],
+    # Support for ResNet18 added by Lorenzo...................................
+    "tiny_yolo3_resnet18": [tiny_yolo3_resnet18_body,20, None],
     "tiny_yolo3_resnet50": [tiny_yolo3_resnet50_body, 175, None],
     "tiny_yolo3_resnet50_lite": [tiny_yolo3lite_resnet50_body, 175, None],
     #'tiny_yolo3_resnet50v2': [tiny_yolo3_resnet50v2_body, 190, None],
