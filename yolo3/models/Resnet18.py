@@ -190,7 +190,6 @@ MODELS_PARAMS = {
 
 
 def ResNet18(model_params = MODELS_PARAMS['resnet18'],
-             version = 'v1', arch_configs = None,
              input_shape=None, input_tensor=None,
              include_top=True, classes=1000, weights='imagenet',
              **kwargs):
@@ -249,33 +248,11 @@ def ResNet18(model_params = MODELS_PARAMS['resnet18'],
     conv_params = get_conv_params()
     init_filters = 64
     
-    default_arch_configs = {'v1':  {'num_stages': 2,
-                                    'init_pool_size': (2,2),
-                                    'downsample_units': [[1,0], [1,0]],
-                                    'filters': [64, 128],
-                                    'decoder_out_filters': [64,64],
-                                    'final_upsample': (4,4)},
-                            'v2':  {'num_stages': 3,
-                                    'init_pool_size': (4,4),
-                                    'filters': [64, 128, 256],
-                                    'downsample_units': [[1,0], [1,0], [1,0]],
-                                    'decoder_out_filters': [128,64,64],
-                                    'final_upsample': (8,8)},
-                            'v3':   {'num_stages': 3,
-                                     'init_pool_size': (2,2),
-                                     'filters': [64, 128, 256],
-                                     'downsample_units': [ [1,1], [1,0], [1,0]],
-                                     'decoder_out_filters': [128,64,64],
-                                     'final_upsample': (4,4)}
-                            }
-
-    if arch_configs is None:
-        arch_configs = default_arch_configs[version]
     
-    downsample_units = arch_configs['downsample_units']
-    num_stages = arch_configs['num_stages']
+    #downsample_units = arch_configs['downsample_units']
+    #num_stages = arch_configs['num_stages']
     repetitions = model_params.repetitions[:num_stages]
-    init_strides = arch_configs['init_pool_size']
+    #init_strides = arch_configs['init_pool_size']
     
     
     
@@ -290,16 +267,16 @@ def ResNet18(model_params = MODELS_PARAMS['resnet18'],
 
     # modified by Lorenzo..............................
     
-    x = layers.MaxPooling2D((3, 3), strides=init_strides, padding='valid', name='pooling0')(x)
+    x = layers.MaxPooling2D((3, 3), strides=(2,2), padding='valid', name='pooling0')(x)
     # resnet body
     for stage, rep in enumerate(repetitions):
         for block in range(rep):
 
-            #filters = init_filters * (2 ** stage)
-            filters = arch_configs['filters'][stage]
+            filters = init_filters * (2 ** stage)
+            #filters = arch_configs['filters'][stage]
             # putting a downsampling block even at first stage..................
             print(stage,block)
-            if downsample_units[stage][block]:
+            if block == 0 and stage > 0:
                 x = ResidualBlock(filters, stage, block, strides=(2, 2),
                                   cut='post', attention=Attention)(x)
 
