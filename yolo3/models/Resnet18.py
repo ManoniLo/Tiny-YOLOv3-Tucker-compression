@@ -19,7 +19,7 @@ ModelParams = collections.namedtuple(
 
 
 
-from load_weights import *
+from load_resnet18_weights import *
 
 
 # -------------------------------------------------------------------------
