@@ -251,7 +251,7 @@ def ResNet18(model_params = MODELS_PARAMS['resnet18'],
     
     #downsample_units = arch_configs['downsample_units']
     #num_stages = arch_configs['num_stages']
-    repetitions = model_params.repetitions[:num_stages]
+    repetitions = model_params.repetitions
     #init_strides = arch_configs['init_pool_size']
     
     
