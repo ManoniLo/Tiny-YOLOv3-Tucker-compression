@@ -19,7 +19,7 @@ ModelParams = collections.namedtuple(
 
 
 
-from load_resnet18_weights import *
+from yolo3.models.load_resnet18_weights import *
 
 
 # -------------------------------------------------------------------------
