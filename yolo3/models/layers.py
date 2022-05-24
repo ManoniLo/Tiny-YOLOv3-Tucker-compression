@@ -200,7 +200,9 @@ def make_spp_last_layers(
         predict_filters = num_filters * 2
     y = compose(
         DarknetConv2D_BN_Leaky(predict_filters, (3, 3)),
-        DarknetConv2D(out_filters, (1, 1), name="predict_conv_" + predict_id),
+        #DarknetConv2D(out_filters, (1, 1), name="predict_conv_" + predict_id),
+        # dont'use predict_conv_id name for final layer to load COCO pretrained weights(updated by Lorenzo)...
+        DarknetConv2D(out_filters, (1, 1)),
     )(x)
     return x, y
 
