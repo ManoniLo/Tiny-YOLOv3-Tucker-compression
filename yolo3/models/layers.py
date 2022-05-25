@@ -174,7 +174,9 @@ def make_last_layers(x, num_filters, out_filters, predict_filters=None, predict_
         predict_filters = num_filters * 2
     y = compose(
         DarknetConv2D_BN_Leaky(predict_filters, (3, 3)),
-        DarknetConv2D(out_filters, (1, 1), name="predict_conv_" + predict_id),
+        #DarknetConv2D(out_filters, (1, 1), name="predict_conv_" + predict_id),
+        # don't use the name predict_conv_id to load pretrained coco weights(updated by Lorenzo...)
+        DarknetConv2D(out_filters, (1, 1)),
     )(x)
     return x, y
 
