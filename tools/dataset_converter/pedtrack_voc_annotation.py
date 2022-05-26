@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 sets=[('2007', 'train'), ('2007', 'val'), ('2007', 'test'), ('2012', 'train'), ('2012', 'val')]
 #classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
-classes = ["bus", "car", "motorbike", "person", "train"]
+classes = ["bicycle","bus", "car", "motorbike", "person"]
 
 class_count = {}
 
