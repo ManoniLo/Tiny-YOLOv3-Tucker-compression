@@ -7,6 +7,8 @@ from yolo3.data import yolo3_data_generator
 from common.model_utils import add_metrics, get_pruning_model
 from common.utils import get_anchors
 
+from yolo3.models.layers import DarknetConv2D
+
 
 def get_yolo_fastest_model(
     model_type,
@@ -19,7 +21,19 @@ def get_yolo_fastest_model(
     pruning_end_step=10000,
 ):
 
-    model_body = tf.keras.models.load_model("yolo_fastest/yolo-fastest.h5")
+    model_body = tf.keras.models.load_model("yolo_fastest/yolo-fastest-xl.h5")
+    inputs = model_body.inputs
+
+    y1 = model_body.layers[263].output
+    y2 = model_body.layers[264].output
+
+
+    y1 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1")(y1)
+    y2 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_2")(y2)
+
+
+    model_body = Model(inputs = inputs, outputs = [y1,y2])
+
     return model_body, None
 
 
@@ -57,7 +71,7 @@ def get_yolo_fastest_train_model(
     model_body, backbone_len = get_yolo_fastest_model(
         model_type,
         num_feature_layers,
-        num_anchors,
+        num_anchors//num_feature_layers,
         num_classes,
         model_pruning=model_pruning,
         pruning_end_step=pruning_end_step,
@@ -134,7 +148,7 @@ def yolo_fastest_data_generator_wrapper(
     n = len(annotation_lines)
     if n == 0 or batch_size <= 0:
         return None
-    input_shape = (320, 320)
+    input_shape = (416, 416)
     return yolo3_data_generator(
         annotation_lines,
         batch_size,
