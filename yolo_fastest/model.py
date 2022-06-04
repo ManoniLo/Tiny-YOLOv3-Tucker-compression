@@ -94,7 +94,7 @@ def get_yolo_fastest_train_model(
 
     if freeze_level in [1, 2]:
         # Freeze the backbone part or freeze all but final feature map & input layers
-        num = (backbone_len, len(model_body.layers) - 3)[freeze_level - 1]
+        num = (backbone_len, len(model_body.layers) - 2)[freeze_level - 1]
         for i in range(num):
             model_body.layers[i].trainable = False
         print(
