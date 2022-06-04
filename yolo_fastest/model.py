@@ -26,6 +26,8 @@ def get_yolo_fastest_model(
 
     y1 = model_body.layers[263].output
     y2 = model_body.layers[264].output
+    
+    backbone_len = 237
 
 
     y1 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1")(y1)
@@ -34,7 +36,7 @@ def get_yolo_fastest_model(
 
     model_body = Model(inputs = inputs, outputs = [y1,y2])
 
-    return model_body, None
+    return model_body, backbone_len
 
 
 def get_yolo_fastest_train_model(
@@ -86,25 +88,25 @@ def get_yolo_fastest_train_model(
     )
     print("model layer number:", len(model_body.layers))
 
-    # if weights_path:
-    #    model_body.load_weights(weights_path, by_name=True)  # , skip_mismatch=True)
-    #    print("Load weights {}.".format(weights_path))
+    if weights_path:
+        model_body.load_weights(weights_path, by_name=True)  # , skip_mismatch=True)
+        print("Load weights {}.".format(weights_path))
 
-    # if freeze_level in [1, 2]:
-    #    # Freeze the backbone part or freeze all but final feature map & input layers.
-    #    num = (backbone_len, len(model_body.layers) - 3)[freeze_level - 1]
-    #    for i in range(num):
-    #        model_body.layers[i].trainable = False
-    #    print(
-    #        "Freeze the first {} layers of total {} layers.".format(
-    #            num, len(model_body.layers)
-    #        )
-    #    )
-    # elif freeze_level == 0:
+    if freeze_level in [1, 2]:
+        # Freeze the backbone part or freeze all but final feature map & input layers
+        num = (backbone_len, len(model_body.layers) - 3)[freeze_level - 1]
+        for i in range(num):
+            model_body.layers[i].trainable = False
+        print(
+            "Freeze the first {} layers of total {} layers.".format(
+                num, len(model_body.layers)
+            )
+        )
+    elif freeze_level == 0:
     #    # Unfreeze all layers.
-    #    for i in range(len(model_body.layers)):
-    #        model_body.layers[i].trainable = True
-    #    print("Unfreeze all of the layers.")
+        for i in range(len(model_body.layers)):
+            model_body.layers[i].trainable = True
+        print("Unfreeze all of the layers.")
 
     model_loss, location_loss, confidence_loss, class_loss = Lambda(
         yolo3_loss,
