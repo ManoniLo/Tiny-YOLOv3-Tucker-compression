@@ -205,7 +205,19 @@ def yolo3_body(inputs, num_anchors, num_classes, weights_path=None):
         num_classes,
     )
 
-    return Model(inputs, [y1, y2, y3])
+    model = Model(inputs, [y1, y2, y3])
+    #readjust final conv names........
+    final_conv_1 = model.get_layer(name = 'conv2d_58')
+    final_conv_1.__name = 'predict_conv1'
+
+    final_conv_2 = model.get_layer(name = 'conv2d_66')
+    final_conv_2.__name = 'predict_conv2'
+
+    final_conv_3 = model.get_layer(name = 'conv2d_74')
+    final_conv_3.__name = 'predict_conv3'
+    
+
+    return model
 
 
 # def custom_yolo3_body(inputs, num_anchors, num_classes, weights_path):
@@ -388,17 +400,17 @@ def tiny_yolo3_body(inputs, num_anchors, num_classes):
 
     # feature map 1 output (13x13 for 416 input)
     y1 = compose(
-        DarknetConv2D_BN_Leaky(512, (3, 3), name = "anchor_1"),
+        DarknetConv2D_BN_Leaky(512, (3, 3), name = "conv2d_8"),
         DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1"),
     )(x1)
 
     # upsample fpn merge for feature map 1 & 2
-    x2 = compose(DarknetConv2D_BN_Leaky(128, (1, 1)), UpSampling2D(2))(x1)
+    x2 = compose(DarknetConv2D_BN_Leaky(128, (1, 1), name = 'conv2d_10'), UpSampling2D(2))(x1)
 
     # feature map 2 output (26x26 for 416 input)
     y2 = compose(
         Concatenate(),
-        DarknetConv2D_BN_Leaky(256, (3, 3), name = "anchor_2"),
+        DarknetConv2D_BN_Leaky(256, (3, 3), name = "conv2d_11"),
         DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_2"),
     )([x2, f2])
 
