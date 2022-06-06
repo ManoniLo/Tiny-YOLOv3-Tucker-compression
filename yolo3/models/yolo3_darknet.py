@@ -98,10 +98,9 @@ def darknet53_truncated_body(x, stages = [1,2,8,8,4], prune_method = 'last',
         # first block of the stage...............
         x = compose(block_layers[0][0], block_layers[0][1])(x)
         for idx in indexes:
-            x = compose(block_layers[idx+1][0], block_layers[idx+1][1])(x)
+            y = compose(block_layers[idx+1][0], block_layers[idx+1][1])(x)
+            x = Add()([x,y])
 
-        # final residual Add................
-        x = Add()([x, first_conv])
 
         stages_outputs.append(x)
     return x, stages_outputs
