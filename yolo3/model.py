@@ -13,7 +13,6 @@ from tensorflow.keras.optimizers import Adam
 
 from yolo3.models.yolo3_darknet import (
     yolo3_body,
-    yolo3_truncated_body,
     custom_tiny_yolo3_body,
     custom_leaky_tiny_yolo3_body,
     custom_tiny_yolo3_body_no_leaky,
@@ -23,6 +22,13 @@ from yolo3.models.yolo3_darknet import (
     tiny_yolo3lite_body,
     custom_yolo3_spp_body,
 )
+
+from yolo3.models.yolo3_darknet_custom_models import (
+    yolo3_truncated_body,
+    yolo3_dropout_body,
+)
+
+
 from yolo3.models.yolo3_mobilenet import (
     yolo3_mobilenet_body,
     tiny_yolo3_mobilenet_body,
@@ -193,6 +199,7 @@ yolo3_model_map = {
     "yolo3_darknet": [yolo3_body, 185, "weights/darknet53.h5"],
     "yolo3_darknet_spp": [custom_yolo3_spp_body, 185, "weights/yolov3-spp.h5"],
     "yolo3_darknet_truncated": [yolo3_truncated_body, 20, None],
+    "yolo3_darknet_dropout": [yolo3_dropout_body, 20, None],
     # Doesn't have pretrained weights, so no need to return backbone length
     "yolo3_darknet_lite": [yolo3lite_body, 0, None],
     "yolo3_vgg16": [yolo3_vgg16_body, 19, None],
