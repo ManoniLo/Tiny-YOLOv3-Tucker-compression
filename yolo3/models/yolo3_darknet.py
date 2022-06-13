@@ -16,7 +16,7 @@ from tensorflow.keras.layers import (
     Softmax,
     Reshape,
     Input,
-    ReLU,
+    ReLU
 )
 from tensorflow.keras.models import Model, Sequential, load_model
 from tensorflow.keras import backend as K
@@ -41,6 +41,9 @@ from yolo3.models.layers import (
 )
 
 
+
+
+
 def resblock_body(x, num_filters, num_blocks):
     """A series of resblocks starting with a downsampling Convolution2D"""
     # Darknet uses left and top padding instead of 'same' mode
@@ -55,91 +58,6 @@ def resblock_body(x, num_filters, num_blocks):
     return x
 
 
-
-# Truncated darknet53 model...................................
-def resblock_body_custom(x, num_filters, num_blocks):
-    """Returns each residual block output"""
-    # Darknet uses left and top padding instead of 'same' mode
-    init_blocks = [ZeroPadding2D(((1, 0), (1, 0))), \
-                   DarknetConv2D_BN_Leaky(num_filters, (3, 3), strides=(2, 2))]
-
-    x = compose(init_blocks[0], init_blocks[1])(x)
-    blocks = [init_blocks]
-    first_conv = x
-    for i in range(num_blocks):
-        block_layers = [DarknetConv2D_BN_Leaky(num_filters // 2, (1, 1)), \
-                        DarknetConv2D_BN_Leaky(num_filters, (3, 3))]
-        #y = compose(
-        #    block_layers[0],
-        #    block_layers[1]
-        #)(x)
-        #x = Add()([x, y])
-        blocks.append(block_layers)
-    
-    return first_conv, blocks
-
-
-def darknet53_truncated_body(x, stages = [1,2,8,8,4], prune_method = 'last',
-                          indexes = None):
-    """Darknet53 body having 52 Convolution2D layers"""
-    fr_stages = [1,2,8,8,4]
-    filters = [64,128,256,512,1024]
-    stages_outputs = []
-    x = DarknetConv2D_BN_Leaky(32, (3, 3))(x)
-    for i,fr_blocks in enumerate(fr_stages):
-        num_blocks = stages[i]
-        first_conv, block_layers = resblock_body_custom(x, filters[i], fr_blocks)
-        # indexes of selected residual blocks........................
-        if prune_method == 'last':
-            indexes = range(0,num_blocks)
-        elif prune_method == 'first':
-            indexes = range(fr_blocks-1,fr_blocks-num_blocks,-1)
-
-        # first block of the stage...............
-        x = compose(block_layers[0][0], block_layers[0][1])(x)
-        for idx in indexes:
-            y = compose(block_layers[idx+1][0], block_layers[idx+1][1])(x)
-            x = Add()([x,y])
-
-
-        stages_outputs.append(x)
-    return x, stages_outputs
-
-
-def yolo3_truncated_body(inputs, num_anchors, num_classes,
-                         stages = [1,2,8,8,4], prune_method = 'last',
-                         weights_path=None):
-
-    """Create YOLO_V3 model CNN body in Keras."""
-    final_output, stages_outputs = darknet53_truncated_body(inputs, stages = stages, prune_method = prune_method)
-    darknet = Model(inputs, outputs = final_output)
-    if weights_path is not None:
-        darknet.load_weights(weights_path, by_name=True)
-        print("Load weights {}.".format(weights_path))
-
-    # f1: 13 x 13 x 1024
-    f1 = darknet.output
-    # f2: 26 x 26 x 512
-    #f2 = darknet.layers[152].output
-    f2 = stages_outputs[3]
-    # f3: 52 x 52 x 256
-    #f3 = darknet.layers[92].output
-    f3 = stages_outputs[2]
-
-
-    
-    f1_channel_num = 1024
-    f2_channel_num = 512
-    f3_channel_num = 256
-
-    y1, y2, y3 = yolo3_predictions(
-        (f1, f2, f3),
-        (f1_channel_num, f2_channel_num, f3_channel_num),
-        num_anchors,
-        num_classes,
-    )
-
-    return Model(inputs, [y1, y2, y3])
 
 
 def darknet53_body(x):
