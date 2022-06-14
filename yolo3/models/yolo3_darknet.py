@@ -245,6 +245,21 @@ def yolo3lite_body(inputs, num_anchors, num_classes):
     return Model(inputs, [y1, y2, y3])
 
 
+def yolo_lite_custom_body(inputs,num_anchors, num_classes):
+    base_model = tf.keras.models.load_model('weights/yolo_lite_coco.h5')
+
+    y1 = base_model.layers[23].output
+    y1 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1")(
+        y1)
+
+    return Model(inputs, [y1])
+    
+
+    
+    
+    
+
+
 def tiny_yolo3_body_no_leaky(inputs, num_anchors, num_classes):
     """Create Tiny YOLO_v3 model CNN body in keras."""
     # feature map 2 (26x26x256 for 416 input)
