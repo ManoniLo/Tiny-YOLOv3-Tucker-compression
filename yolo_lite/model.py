@@ -8,7 +8,7 @@ from functools import partial
 
 import tensorflow.keras.backend as K
 from tensorflow.keras.layers import Input, Lambda
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.optimizers import Adam
 
 from yolo3.models.layers import (
@@ -21,15 +21,30 @@ from yolo3.models.layers import (
     Darknet_Depthwise_Separable_Conv2D_BN_Leaky,
 )
 
+from common.model_utils import add_metrics, get_pruning_model
+from common.utils import get_anchors
+from yolo_lite.loss import yolo_lite_loss
+#from yolo3.data import yolo3_data_generator
+from yolo_lite.data import yolo2_data_generator
 
-def get_yolo_lite_model(inputs,num_anchors, num_classes):
-    base_model = tf.keras.models.load_model('weights/yolo_lite_coco.h5')
 
+def get_yolo_lite_model(model_type,
+                        num_feature_layers,
+                        num_anchors,
+                        num_classes,
+                        input_tensor=None,
+                        input_shape=None,
+                        model_pruning=False,
+                        pruning_end_step=10000):
+    
+    base_model = load_model('weights/yolo_lite_coco.h5')
+    inputs = base_model.inputs
+    
     y1 = base_model.layers[23].output
     y1 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1")(
         y1)
 
-    return Model(inputs, [y1])
+    return Model(inputs, [y1]), None
 
 
 
@@ -48,10 +63,10 @@ def get_yolo_lite_train_model(
     """create the training model, for YOLOv3"""
     # K.clear_session() # get a new session
     anchors = get_anchors("./configs/yolo_lite_anchors.txt")
-    num_anchors = 3
+    num_anchors = len(anchors)
     # model has 3 anchors and 1 feature layer,
     # so we can calculate feature layers number to get model type
-    num_feature_layers = num_anchors // 3
+    num_feature_layers = num_anchors // 5
 
     # feature map target value, so its shape should be like:
     # [
@@ -60,7 +75,7 @@ def get_yolo_lite_train_model(
     #  (image_height/8, image_width/8, 3, num_classes+5)
     # ]
     y_true = [
-        Input(shape=(None, None, 3, num_classes + 5), name="y_true_{}".format(l))
+        Input(shape=(None, None, 5, num_classes + 5), name="y_true_{}".format(l))
         for l in range(num_feature_layers)
     ]
 
@@ -70,7 +85,7 @@ def get_yolo_lite_train_model(
         num_anchors//num_feature_layers,
         num_classes,
         model_pruning=model_pruning,
-        pruning_end_step=pruning_end_step,
+        pruning_end_step=pruning_end_step
     )
     print(
         "Create {} {} model with {} anchors and {} classes.".format(
@@ -88,7 +103,7 @@ def get_yolo_lite_train_model(
 
     if freeze_level in [1, 2]:
         # Freeze the backbone part or freeze all but final feature map & input layers
-        num = (backbone_len, len(model_body.layers) - 2)[freeze_level - 1]
+        num = (backbone_len, len(model_body.layers) - 1)[freeze_level - 1]
         for i in range(num):
             model_body.layers[i].trainable = False
         print(
@@ -103,18 +118,17 @@ def get_yolo_lite_train_model(
         print("Unfreeze all of the layers.")
 
     model_loss, location_loss, confidence_loss, class_loss = Lambda(
-        yolo3_loss,
+        yolo_lite_loss,
         name="yolo_loss",
         arguments={
             "anchors": anchors,
             "num_classes": num_classes,
-            "ignore_thresh": 0.5,
             "label_smoothing": label_smoothing,
             "elim_grid_sense": False,
         },
     )([*model_body.output, *y_true])
 
-    model = Model([model_body.input, *y_true], model_loss)
+    model = Model([model_body.inputs, *y_true], model_loss)
 
     loss_dict = {
         "location_loss": location_loss,
@@ -145,7 +159,7 @@ def yolo_lite_data_generator_wrapper(
     if n == 0 or batch_size <= 0:
         return None
     input_shape = (416, 416)
-    return yolo3_data_generator(
+    return yolo2_data_generator(
         annotation_lines,
         batch_size,
         input_shape,
