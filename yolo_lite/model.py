@@ -126,7 +126,7 @@ def get_yolo_lite_train_model(
             "label_smoothing": label_smoothing,
             "elim_grid_sense": False,
         },
-    )([*model_body.output, *y_true])
+    )([*model_body.outputs, *y_true])
 
     model = Model([model_body.inputs, *y_true], model_loss)
 
