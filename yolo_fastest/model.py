@@ -21,7 +21,7 @@ def get_yolo_fastest_model(
     pruning_end_step=10000,
 ):
 
-    model_body = tf.keras.models.load_model("yolo_fastest/yolo-fastest-xl.h5")
+    model_body = tf.keras.models.load_model("weights/yolo-fastest-xl.h5")
     inputs = model_body.inputs
 
     y1 = model_body.layers[263].output
