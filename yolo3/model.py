@@ -279,7 +279,7 @@ yolo3_tiny_model_map = {
     "tiny_yolo3_vgg16": [tiny_yolo3_vgg16_body, 19, None],
     "tiny_yolo3_xception": [tiny_yolo3_xception_body, 132, None],
     "tiny_yolo3_xception_lite": [tiny_yolo3lite_xception_body, 132, None],
-    "tiny_yolo4_darknet": [custom_tiny_yolo4_body, 0, None],
+    #"tiny_yolo4_darknet": [custom_tiny_yolo4_body, 0, None],
     "tiny_yolo4_mobilenet": [tiny_yolo4_mobilenet_body, 87, None],
     "tiny_yolo4_mobilenet_lite": [tiny_yolo4lite_mobilenet_body, 87, None],
     "tiny_yolo4_mobilenet_lite_nospp": [
@@ -316,7 +316,7 @@ yolo3_tiny_model_map = {
         166,
         None,
     ],
-    "tiny_tolo4_darknet": [tiny_yolo4_darknet, 20, None],
+    "tiny_yolo4_darknet": [tiny_yolo4_darknet, 20, None],
     "tiny_yolo4_resnet50": [tiny_yolo4_resnet50_body, 175, None],
     "tiny_yolo4_resnet50_lite": [tiny_yolo4lite_resnet50_body, 175, None],
     #'tiny_yolo4_resnet50v2': [tiny_yolo4_resnet50v2_body, 190, None],
