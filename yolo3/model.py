@@ -101,7 +101,7 @@ from yolo3.models.yolo3_resnet18 import (
 
 
 from yolo4.models.yolo4_darknet import yolo4_body
-from yolo4.models.tiny_yolo4_darknet import tiny_yolo4_body
+#from yolo4.models.tiny_yolo4_darknet import tiny_yolo4_body
 from yolo4.models.yolo4_mobilenet import (
     yolo4_mobilenet_body,
     yolo4lite_mobilenet_body,
