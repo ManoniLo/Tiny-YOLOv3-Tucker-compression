@@ -463,10 +463,14 @@ def custom_tiny_yolo4_body(
     """LOAD a custom Tiny YOLO_v4 model, use
     pre-trained weights from darknet and fit
     for our target classes."""
-    base_model = load_model("weights/yolov4-tiny.h5")
+    base_model = load_model("weights/yolov4_tiny_weights_coco.h5")
     # get conv output in original network
-    y1 = base_model.get_layer("leaky_re_lu_16").output
-    y2 = base_model.get_layer("leaky_re_lu_18").output
+    #y1 = base_model.get_layer("leaky_re_lu_16").output
+    #y2 = base_model.get_layer("leaky_re_lu_18").output
+    
+    y1 = base_model.get_layer("leaky_re_lu_17").output
+    y2 = base_model.get_layer("leaky_re_lu_19").output
+    
     y1 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1")(
         y1
     )
