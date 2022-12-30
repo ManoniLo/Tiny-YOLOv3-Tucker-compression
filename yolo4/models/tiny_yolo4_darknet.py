@@ -5,7 +5,11 @@ from tensorflow.keras.layers import (Concatenate, Conv2D, Lambda, MaxPooling2D,
 from tensorflow.keras.layers.advanced_activations import LeakyReLU
 from tensorflow.keras.layers.normalization import BatchNormalization
 from tensorflow.keras.regularizers import l2
-from utils.utils import compose
+
+
+from layers import compose
+
+from attention import se_block, cbam_block, eca_block, ca_block
 
 
 def route_group(input_layer, groups, group_id):
