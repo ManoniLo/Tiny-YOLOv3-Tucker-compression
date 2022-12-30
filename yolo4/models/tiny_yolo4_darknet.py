@@ -1,10 +1,10 @@
 import tensorflow as tf
-from keras.initializers import random_normal
-from keras.layers import (Concatenate, Conv2D, Lambda, MaxPooling2D,
+from tensorflow.keras.initializers import random_normal
+from tensorflow.keras.layers import (Concatenate, Conv2D, Lambda, MaxPooling2D,
                           ZeroPadding2D)
-from keras.layers.advanced_activations import LeakyReLU
-from keras.layers.normalization import BatchNormalization
-from keras.regularizers import l2
+from tensorflow.keras.layers.advanced_activations import LeakyReLU
+from tensorflow.keras.layers.normalization import BatchNormalization
+from tensorflow.keras.regularizers import l2
 from utils.utils import compose
 
 
