@@ -12,6 +12,8 @@ from tensorflow.keras.regularizers import l2
 
 from common.backbones.layers import YoloConv2D, YoloDepthwiseConv2D, CustomBatchNormalization
 
+
+
 def compose(*funcs):
     """Compose arbitrarily many functions, evaluated left to right.
 
