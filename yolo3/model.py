@@ -101,6 +101,7 @@ from yolo3.models.yolo3_resnet18 import (
 
 
 from yolo4.models.yolo4_darknet import yolo4_body
+from yolo4.models.tiny_yolo4_darknet import tiny_yolo4_body
 from yolo4.models.yolo4_mobilenet import (
     yolo4_mobilenet_body,
     yolo4lite_mobilenet_body,
@@ -315,6 +316,7 @@ yolo3_tiny_model_map = {
         166,
         None,
     ],
+    "tiny_tolo4_darknet": [tiny_yolo4_darknet, 20, None],
     "tiny_yolo4_resnet50": [tiny_yolo4_resnet50_body, 175, None],
     "tiny_yolo4_resnet50_lite": [tiny_yolo4lite_resnet50_body, 175, None],
     #'tiny_yolo4_resnet50v2': [tiny_yolo4_resnet50v2_body, 190, None],
