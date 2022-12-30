@@ -84,7 +84,7 @@ def darknet_body(x):
   attention = [se_block, cbam_block, eca_block, ca_block]
 
 
-def yolo_body(input_shape, anchors_mask, num_classes, phi = 0):
+def tiny_yolo4_body(input_shape, anchors_mask, num_classes, phi = 0):
     inputs = Input(input_shape)
     
     feat1, feat2 = darknet_body(inputs)
