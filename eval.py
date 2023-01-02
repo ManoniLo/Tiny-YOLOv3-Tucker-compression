@@ -16,7 +16,7 @@ from tqdm import tqdm
 from tensorflow.keras.models import load_model
 import tensorflow.keras.backend as K
 import tensorflow as tf
-import MNN
+#import MNN
 import onnxruntime
 
 from yolo5.postprocess_np import yolo5_postprocess_np
@@ -140,116 +140,116 @@ def yolo_predict_tflite(interpreter, image, anchors, num_classes, conf_threshold
     return pred_boxes, pred_classes, pred_scores
 
 
-def yolo_predict_mnn(interpreter, session, image, anchors, num_classes, conf_threshold, elim_grid_sense, v5_decode):
-    # assume only 1 input tensor for image
-    input_tensor = interpreter.getSessionInput(session)
-    # get input shape
-    input_shape = input_tensor.getShape()
-    if input_tensor.getDimensionType() == MNN.Tensor_DimensionType_Tensorflow:
-        batch, height, width, channel = input_shape
-    elif input_tensor.getDimensionType() == MNN.Tensor_DimensionType_Caffe:
-        batch, channel, height, width = input_shape
-    else:
-        # should be MNN.Tensor_DimensionType_Caffe_C4, unsupported now
-        raise ValueError('unsupported input tensor dimension type')
+#def yolo_predict_mnn(interpreter, session, image, anchors, num_classes, conf_threshold, elim_grid_sense, v5_decode):
+ #   # assume only 1 input tensor for image
+ #   input_tensor = interpreter.getSessionInput(session)
+ #   # get input shape
+ #   input_shape = input_tensor.getShape()
+ #   if input_tensor.getDimensionType() == MNN.Tensor_DimensionType_Tensorflow:
+ #       batch, height, width, channel = input_shape
+ #   elif input_tensor.getDimensionType() == MNN.Tensor_DimensionType_Caffe:
+ #       batch, channel, height, width = input_shape
+ #   else:
+ #       # should be MNN.Tensor_DimensionType_Caffe_C4, unsupported now
+ #       raise ValueError('unsupported input tensor dimension type')
 
-    model_image_size = (height, width)
+ #   model_image_size = (height, width)
 
-    # prepare input image
-    image_data = preprocess_image(image, model_image_size)
-    #origin image shape, in (height, width) format
-    image_shape = tuple(reversed(image.size))
+ #   # prepare input image
+ #   image_data = preprocess_image(image, model_image_size)
+ #   #origin image shape, in (height, width) format
+ #   image_shape = tuple(reversed(image.size))
 
-    # use a temp tensor to copy data
-    tmp_input = MNN.Tensor(input_shape, input_tensor.getDataType(),\
-                    image_data, input_tensor.getDimensionType())
+ #   # use a temp tensor to copy data
+ #   tmp_input = MNN.Tensor(input_shape, input_tensor.getDataType(),\
+ #                   image_data, input_tensor.getDimensionType())
 
-    input_tensor.copyFrom(tmp_input)
-    interpreter.runSession(session)
+ #   input_tensor.copyFrom(tmp_input)
+ #   interpreter.runSession(session)
 
-    def get_tensor_list(output_tensors):
-        # transform the output tensor dict to ordered tensor list, for further postprocess
-        #
-        # output tensor list should be like (for YOLOv3):
-        # [
-        #  (name, tensor) for (13, 13, 3, num_classes+5),
-        #  (name, tensor) for (26, 26, 3, num_classes+5),
-        #  (name, tensor) for (52, 52, 3, num_classes+5)
-        # ]
-        output_list = []
+ #   def get_tensor_list(output_tensors):
+ #       # transform the output tensor dict to ordered tensor list, for further postprocess
+ #       #
+ #       # output tensor list should be like (for YOLOv3):
+ #       # [
+ #       #  (name, tensor) for (13, 13, 3, num_classes+5),
+ #       #  (name, tensor) for (26, 26, 3, num_classes+5),
+ #       #  (name, tensor) for (52, 52, 3, num_classes+5)
+ #       # ]
+ #       output_list = []
 
-        for (output_tensor_name, output_tensor) in output_tensors.items():
-            tensor_shape = output_tensor.getShape()
-            dim_type = output_tensor.getDimensionType()
-            tensor_height, tensor_width = tensor_shape[2:4] if dim_type == MNN.Tensor_DimensionType_Caffe else tensor_shape[1:3]
+ #       for (output_tensor_name, output_tensor) in output_tensors.items():
+ #           tensor_shape = output_tensor.getShape()
+ #           dim_type = output_tensor.getDimensionType()
+ #           tensor_height, tensor_width = tensor_shape[2:4] if dim_type == MNN.Tensor_DimensionType_Caffe else tensor_shape[1:3]
 
-            if len(anchors) == 6:
-                # Tiny YOLOv3
-                if tensor_height == height//32:
-                    output_list.insert(0, (output_tensor_name, output_tensor))
-                elif tensor_height == height//16:
-                    output_list.insert(1, (output_tensor_name, output_tensor))
-                else:
-                    raise ValueError('invalid tensor shape')
-            elif len(anchors) == 9:
-                # YOLOv3
-                if tensor_height == height//32:
-                    output_list.insert(0, (output_tensor_name, output_tensor))
-                elif tensor_height == height//16:
-                    output_list.insert(1, (output_tensor_name, output_tensor))
-                elif tensor_height == height//8:
-                    output_list.insert(2, (output_tensor_name, output_tensor))
-                else:
-                    raise ValueError('invalid tensor shape')
-            elif len(anchors) == 5:
-                # YOLOv2 use 5 anchors and have only 1 prediction
-                assert len(output_tensors) == 1, 'YOLOv2 model should have only 1 output tensor.'
-                output_list.insert(0, (output_tensor_name, output_tensor))
-            else:
-                raise ValueError('invalid anchor number')
+ #           if len(anchors) == 6:
+ #               # Tiny YOLOv3
+ #               if tensor_height == height//32:
+ #                   output_list.insert(0, (output_tensor_name, output_tensor))
+ #               elif tensor_height == height//16:
+ #                   output_list.insert(1, (output_tensor_name, output_tensor))
+ #               else:
+ #                   raise ValueError('invalid tensor shape')
+ #           elif len(anchors) == 9:
+ #               # YOLOv3
+ #                if tensor_height == height//32:
+ #                    output_list.insert(0, (output_tensor_name, output_tensor))
+ #               elif tensor_height == height//16:
+ #                   output_list.insert(1, (output_tensor_name, output_tensor))
+ #               elif tensor_height == height//8:
+ #                   output_list.insert(2, (output_tensor_name, output_tensor))
+ #               else:
+ #                   raise ValueError('invalid tensor shape')
+ #           elif len(anchors) == 5:
+ #               # YOLOv2 use 5 anchors and have only 1 prediction
+ #               assert len(output_tensors) == 1, 'YOLOv2 model should have only 1 output tensor.'
+ #               output_list.insert(0, (output_tensor_name, output_tensor))
+ #           else:
+ #               raise ValueError('invalid anchor number')
 
-        return output_list
+ #       return output_list
 
-    output_tensors = interpreter.getSessionOutputAll(session)
-    output_tensor_list = get_tensor_list(output_tensors)
+ #   output_tensors = interpreter.getSessionOutputAll(session)
+ #   output_tensor_list = get_tensor_list(output_tensors)
 
-    prediction = []
-    for (output_tensor_name, output_tensor) in output_tensor_list:
-        output_shape = output_tensor.getShape()
-        output_elementsize = reduce(mul, output_shape)
+ #   prediction = []
+ #   for (output_tensor_name, output_tensor) in output_tensor_list:
+ #       output_shape = output_tensor.getShape()
+ #       output_elementsize = reduce(mul, output_shape)
 
-        assert output_tensor.getDataType() == MNN.Halide_Type_Float
+ #       assert output_tensor.getDataType() == MNN.Halide_Type_Float
 
-        # copy output tensor to host, for further postprocess
-        tmp_output = MNN.Tensor(output_shape, output_tensor.getDataType(),\
-                    #np.zeros(output_shape, dtype=float), output_tensor.getDimensionType())
-                    tuple(np.zeros(output_shape, dtype=float).reshape(output_elementsize, -1)), output_tensor.getDimensionType())
+ #       # copy output tensor to host, for further postprocess
+ #       tmp_output = MNN.Tensor(output_shape, output_tensor.getDataType(),\
+ #                   #np.zeros(output_shape, dtype=float), output_tensor.getDimensionType())
+ #                   tuple(np.zeros(output_shape, dtype=float).reshape(output_elementsize, -1)), output_tensor.getDimensionType())
 
-        output_tensor.copyToHostTensor(tmp_output)
-        #tmp_output.printTensorData()
+ #       output_tensor.copyToHostTensor(tmp_output)
+ #       #tmp_output.printTensorData()
 
-        output_data = np.array(tmp_output.getData(), dtype=float).reshape(output_shape)
-        # our postprocess code based on TF channel last format, so if the output format
-        # doesn't match, we need to transpose
-        if output_tensor.getDimensionType() == MNN.Tensor_DimensionType_Caffe:
-            output_data = output_data.transpose((0,2,3,1))
-        elif output_tensor.getDimensionType() == MNN.Tensor_DimensionType_Caffe_C4:
-            raise ValueError('unsupported output tensor dimension type')
+ #       output_data = np.array(tmp_output.getData(), dtype=float).reshape(output_shape)
+ #       # our postprocess code based on TF channel last format, so if the output format
+ #       # doesn't match, we need to transpose
+ #       if output_tensor.getDimensionType() == MNN.Tensor_DimensionType_Caffe:
+ #           output_data = output_data.transpose((0,2,3,1))
+ #       elif output_tensor.getDimensionType() == MNN.Tensor_DimensionType_Caffe_C4:
+ #           raise ValueError('unsupported output tensor dimension type')
 
-        prediction.append(output_data)
+ #       prediction.append(output_data)
 
-    prediction.sort(key=lambda x: len(x[0]))
-    if len(anchors) == 5:
-        # YOLOv2 use 5 anchors and have only 1 prediction
-        assert len(prediction) == 1, 'invalid YOLOv2 prediction number.'
-        pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction[0], image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
-    else:
-        if v5_decode:
-            pred_boxes, pred_classes, pred_scores = yolo5_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=True) #enable "elim_grid_sense" by default
-        else:
-            pred_boxes, pred_classes, pred_scores = yolo3_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+ #   prediction.sort(key=lambda x: len(x[0]))
+ #   if len(anchors) == 5:
+ #       # YOLOv2 use 5 anchors and have only 1 prediction
+ #       assert len(prediction) == 1, 'invalid YOLOv2 prediction number.'
+ #       pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction[0], image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+ #   else:
+ #       if v5_decode:
+ #           pred_boxes, pred_classes, pred_scores = yolo5_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=True) #enable "elim_grid_sense" by default
+ #       else:
+ #           pred_boxes, pred_classes, pred_scores = yolo3_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
 
-    return pred_boxes, pred_classes, pred_scores
+ #   return pred_boxes, pred_classes, pred_scores
 
 
 def yolo_predict_pb(model, image, anchors, num_classes, model_image_size, conf_threshold, elim_grid_sense, v5_decode):
@@ -389,8 +389,8 @@ def get_prediction_class_records(model, model_format, annotation_records, anchor
         if model_format == 'TFLITE':
             pred_boxes, pred_classes, pred_scores = yolo_predict_tflite(model, image, anchors, len(class_names), conf_threshold, elim_grid_sense, v5_decode)
         # support of MNN model
-        elif model_format == 'MNN':
-            pred_boxes, pred_classes, pred_scores = yolo_predict_mnn(model, session, image, anchors, len(class_names), conf_threshold, elim_grid_sense, v5_decode)
+        #elif model_format == 'MNN':
+        #    pred_boxes, pred_classes, pred_scores = yolo_predict_mnn(model, session, image, anchors, len(class_names), conf_threshold, elim_grid_sense, v5_decode)
         # support of TF 1.x frozen pb model
         elif model_format == 'PB':
             pred_boxes, pred_classes, pred_scores = yolo_predict_pb(model, image, anchors, len(class_names), model_image_size, conf_threshold, elim_grid_sense, v5_decode)
@@ -1287,9 +1287,9 @@ def load_eval_model(model_path):
         model_format = 'TFLITE'
 
     # support of MNN model
-    elif model_path.endswith('.mnn'):
-        model = MNN.Interpreter(model_path)
-        model_format = 'MNN'
+    #elif model_path.endswith('.mnn'):
+    #    model = MNN.Interpreter(model_path)
+    #    model_format = 'MNN'
 
     # support of TF 1.x frozen pb model
     elif model_path.endswith('.pb'):
