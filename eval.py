@@ -193,7 +193,7 @@ def yolo_predict_mnn(interpreter, session, image, anchors, num_classes, conf_thr
                     raise ValueError('invalid tensor shape')
             elif len(anchors) == 9:
                 # YOLOv3
-                 if tensor_height == height//32:
+                if tensor_height == height//32:
                      output_list.insert(0, (output_tensor_name, output_tensor))
                 elif tensor_height == height//16:
                     output_list.insert(1, (output_tensor_name, output_tensor))
