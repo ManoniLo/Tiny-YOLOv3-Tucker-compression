@@ -41,5 +41,9 @@ def tiny_yolo4_body(inputs, num_anchors, num_classes):
     P4_output = DarknetConv2D_BN_Leaky(256, (3,3))(P4)
     P4_output = DarknetConv2D(num_anchors * (num_classes+5), (1,1))(P4_output)
     
-    return Model(inputs, [P5_output, P4_output])
+    model = Model(inputs, [P5_output, P4_output])
+    if weights_path is not None:
+      model.load_weights(weights_path,skip_mismatch = True)
+    
+    return model
 
