@@ -5,7 +5,7 @@ from tensorflow.keras.initializers import random_normal
 from tensorflow.keras.layers import (Concatenate, Conv2D, Lambda, MaxPooling2D,
                                      ZeroPadding2D)
 from tensorflow.keras.layers import LeakyReLU
-from tensorflow.keras.layers.normalization import BatchNormalization
+from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.regularizers import l2
 
 
