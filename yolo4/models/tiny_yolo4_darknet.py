@@ -15,8 +15,8 @@ from yolo4.models.CSPdarknet53_tiny import (DarknetConv2D, DarknetConv2D_BN_Leak
                                             compose)
 
 
-def tiny_yolo4_body(input_shape, anchors_mask, num_classes):
-    inputs = Input(input_shape)
+def tiny_yolo4_body(inputs, anchors_mask, num_classes):
+    #inputs = Input(input_shape)
     
     feat1, feat2 = tiny_yolo_darknet_body(inputs)
     #if phi >= 1 and phi <= 4:
