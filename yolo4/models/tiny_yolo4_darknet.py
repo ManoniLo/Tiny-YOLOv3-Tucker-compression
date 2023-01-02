@@ -43,7 +43,7 @@ def tiny_yolo4_body(inputs, num_anchors, num_classes):
     
     model = Model(inputs, [P5_output, P4_output])
     if weights_path is not None:
-      model.load_weights(weights_path,skip_mismatch = True)
+      model.load_weights(weights_path,by_name = True, skip_mismatch = True)
     
     return model
 
