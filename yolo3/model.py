@@ -279,7 +279,7 @@ yolo3_tiny_model_map = {
     "tiny_yolo3_vgg16": [tiny_yolo3_vgg16_body, 19, None],
     "tiny_yolo3_xception": [tiny_yolo3_xception_body, 132, None],
     "tiny_yolo3_xception_lite": [tiny_yolo3lite_xception_body, 132, None],
-    "tiny_yolo4_darknet": [tiny_yolo4_body, 0, None],
+    "tiny_yolo4_darknet": [tiny_yolo4_body, 0, "weights/yolov4_tiny_weights_coco.h5"],
     "tiny_yolo4_mobilenet": [tiny_yolo4_mobilenet_body, 87, None],
     "tiny_yolo4_mobilenet_lite": [tiny_yolo4lite_mobilenet_body, 87, None],
     "tiny_yolo4_mobilenet_lite_nospp": [
