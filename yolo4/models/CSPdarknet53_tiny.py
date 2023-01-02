@@ -1,4 +1,4 @@
-from functools import wraps,reduce
+from functools import wraps, reduce
 
 import tensorflow as tf
 from tensorflow.keras.initializers import random_normal
@@ -85,8 +85,8 @@ def resblock_body(x, num_filters):
     return x, feat
 
 
-def tiny_yolo_darknet_body(x):
-  
+def tiny_yolo_darknet_body(x,weights_path = None):
+    
     x = ZeroPadding2D(((1,0),(1,0)))(x)
     x = DarknetConv2D_BN_Leaky(32, (3,3), strides=(2,2))(x)
     x = ZeroPadding2D(((1,0),(1,0)))(x)
@@ -103,6 +103,8 @@ def tiny_yolo_darknet_body(x):
     x = DarknetConv2D_BN_Leaky(512, (3,3))(x)
 
     feat2 = x
-    return feat1, feat2
+
+
+    return feat1,feat2
   
   
