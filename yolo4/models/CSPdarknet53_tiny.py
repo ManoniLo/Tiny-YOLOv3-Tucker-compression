@@ -1,4 +1,4 @@
-from functools import wraps
+from functools import wraps,reduce
 
 import tensorflow as tf
 from tensorflow.keras.initializers import random_normal
