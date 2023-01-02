@@ -10,9 +10,9 @@ from tensorflow.keras.models import Model
 
 #attention = [se_block, cbam_block, eca_block, ca_block]
 
-from CSPdarknet53_tiny import (DarknetConv2D, DarknetConv2D_BN_Leaky,
-                               tiny_yolo_darknet_body, 
-                               compose)
+from yolo4.models.CSPdarknet53_tiny import (DarknetConv2D, DarknetConv2D_BN_Leaky,
+                                            tiny_yolo_darknet_body, 
+                                            compose)
 
 
 def tiny_yolo4_body(input_shape, anchors_mask, num_classes):
