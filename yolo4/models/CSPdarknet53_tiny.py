@@ -86,6 +86,9 @@ def resblock_body(x, num_filters):
 
 
 def tiny_yolo_darknet_body(x,weights_path = None):
+  
+    conv_off_name = Conv2D(16, (1,1))(x)
+    bn_off_name = BatchNormalization()(x)
     
     x = ZeroPadding2D(((1,0),(1,0)))(x)
     x = DarknetConv2D_BN_Leaky(32, (3,3), strides=(2,2))(x)
