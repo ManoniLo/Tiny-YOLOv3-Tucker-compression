@@ -43,13 +43,13 @@ def tiny_yolo4_body(inputs, num_anchors, num_classes, weights_path = None):
 
   P4_output = DarknetConv2D(num_anchors * (num_classes+5), (1,1))(P4_output)
   P5_output = DarknetConv2D(num_anchors*  (num_classes+5), (1,1))(P5_output)
-
-
-  if weights_path is not None:
-      model_body.load_weights(weights_path)
-
   
   model = Model(inputs = inputs, outputs = [P5_output, P4_output])
-    
+  
+  if weights_path is not None:
+      model.load_weights(weights_path,by_name = True, skip_mismatch = True)
+
+  
+  
   return model
 
