@@ -17,6 +17,8 @@ from tensorflow.keras.layers import Input, Lambda
 from tensorflow_model_optimization.sparsity import keras as sparsity
 from PIL import Image
 
+from yolox.model import get_yolox_model, get_yolox_inference_model
+from yolox.postprocess_np import yolox_postprocess_np
 from yolo5.model import get_yolo5_model, get_yolo5_inference_model
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.model import get_yolo3_model, get_yolo3_inference_model
@@ -80,7 +82,6 @@ class YOLO_np(object):
         #Tiny YOLOv3 model has 6 anchors and 2 feature layers,
         #so we can calculate feature layers number to get model type
         num_feature_layers = num_anchors//3
-
         try:
             if self.model_type.startswith('scaled_yolo4_') or self.model_type.startswith('yolo5_'):
                 # Scaled-YOLOv4 & YOLOv5 entrance
@@ -92,6 +93,9 @@ class YOLO_np(object):
             elif self.model_type.startswith('yolo2_') or self.model_type.startswith('tiny_yolo2_'):
                 # YOLOv2 entrance
                 yolo_model, _ = get_yolo2_model(self.model_type, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
+            elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
+                # YOLOX entrance
+                yolo_model, _ = get_yolox_model(self.model_type, num_feature_layers,num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
             else:
                 raise ValueError('Unsupported model type')
 
@@ -146,6 +150,8 @@ class YOLO_np(object):
         elif self.model_type.startswith('yolo2_') or self.model_type.startswith('tiny_yolo2_'):
             # YOLOv2 entrance
             out_boxes, out_classes, out_scores = yolo2_postprocess_np(self.yolo_model.predict(image_data), image_shape, self.anchors, len(self.class_names), self.model_image_size, max_boxes=100, confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
+        elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
+            out_boxes, out_classes, out_scores = yolox_postprocess_np(self.yolo_model.predict(image_data), image_shape, self.anchors, len(self.class_names), self.model_image_size, max_boxes=100, confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
         else:
             raise ValueError('Unsupported model type')
 
@@ -200,6 +206,12 @@ class YOLO(object):
         elif self.model_type.startswith('yolo2_') or self.model_type.startswith('tiny_yolo2_'):
             # YOLOv2 entrance
             inference_model = get_yolo2_inference_model(self.model_type, self.anchors, num_classes, weights_path=weights_path, input_shape=self.model_image_size + (3,), confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
+        elif self.model_type.startswith('yolo2_') or self.model_type.startswith('tiny_yolo2_'):
+            # YOLOv2 entrance
+            inference_model = get_yolo2_inference_model(self.model_type, self.anchors, num_classes, weights_path=weights_path, input_shape=self.model_image_size + (3,), confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
+        elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
+            # YOLOX entrance
+            inference_model = get_yolox_inference_model(self.model_type, self.anchors, num_classes, weights_path=weights_path, input_shape=self.model_image_size + (3,), confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
         else:
             raise ValueError('Unsupported model type')
 
