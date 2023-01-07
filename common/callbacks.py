@@ -8,6 +8,7 @@ from tensorflow_model_optimization.sparsity import keras as sparsity
 from tensorflow.keras.callbacks import Callback
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+from yolox.model import get_yolox_model
 from yolo5.model import get_yolo5_model
 from yolo3.model import get_yolo3_model
 from yolo2.model import get_yolo2_model
@@ -58,6 +59,9 @@ class EvalCallBack(Callback):
         elif self.model_type.startswith('yolo2_') or self.model_type.startswith('tiny_yolo2_'):
             # YOLOv2 entrance
             eval_model, _ = get_yolo2_model(self.model_type, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.model_pruning)
+            self.v5_decode = False
+        elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
+            eval_model, _ = get_yolox_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + list((3,)), model_pruning=self.model_pruning)
             self.v5_decode = False
         else:
             raise ValueError('Unsupported model type')
