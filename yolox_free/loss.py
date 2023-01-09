@@ -263,7 +263,7 @@ def yolox_loss(args, anchors, num_classes, ignore_thresh=.5, label_smoothing=0, 
 
     '''
     #num_layers = len(anchors)//3 # default setting
-    anchors_per_layer = len(anchors[0])
+    anchors_per_layer = 1
     num_layers = len(anchors) // anchors_per_layer
     yolo_outputs = args[:num_layers]
     y_true = args[num_layers:]
