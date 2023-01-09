@@ -342,7 +342,7 @@ def yolo_predict_keras(model, image, anchors, num_classes, model_image_size, con
     if len(anchors) == 5:
         # YOLOv2 use 5 anchors
         pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
-    elif len(anchors[0]) == 1:
+    elif len(anchors) == 2:
         pred_boxes, pred_classes, pred_scores = yolox_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
     else:
         if v5_decode:
