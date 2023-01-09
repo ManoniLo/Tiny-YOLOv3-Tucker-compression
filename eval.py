@@ -19,6 +19,7 @@ import tensorflow as tf
 #import MNN
 import onnxruntime
 
+from yolox_free.postprocess_np import yolox_postprocess_np
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.postprocess_np import yolo3_postprocess_np
 from yolo2.postprocess_np import yolo2_postprocess_np
@@ -341,6 +342,8 @@ def yolo_predict_keras(model, image, anchors, num_classes, model_image_size, con
     if len(anchors) == 5:
         # YOLOv2 use 5 anchors
         pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+    elif len(anchors[0]) == 1:
+        pred_boxes, pred_classes, pred_scores = yolox_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
     else:
         if v5_decode:
             pred_boxes, pred_classes, pred_scores = yolo5_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=True) #enable "elim_grid_sense" by default
@@ -1020,10 +1023,10 @@ def compute_mAP_PascalVOC(annotation_records, gt_classes_records, pred_classes_r
 
 
     if show_result:
-        plot_Pascal_AP_result(len(annotation_records), count_true_positives, len(gt_classes_records),
-                                  gt_counter_per_class, pred_counter_per_class,
-                                  precision_dict, recall_dict, mPrec, mRec,
-                                  APs, mAP, iou_threshold)
+        #plot_Pascal_AP_result(len(annotation_records), count_true_positives, len(gt_classes_records),
+        #                          gt_counter_per_class, pred_counter_per_class,
+        #                          precision_dict, recall_dict, mPrec, mRec,
+        #                          APs, mAP, iou_threshold)
         #show result
         print('\nPascal VOC AP evaluation')
         for (class_name, AP) in APs.items():
