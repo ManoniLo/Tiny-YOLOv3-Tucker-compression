@@ -17,8 +17,10 @@ from tensorflow.keras.layers import Input, Lambda
 from tensorflow_model_optimization.sparsity import keras as sparsity
 from PIL import Image
 
-from yolox.model import get_yolox_model, get_yolox_inference_model
-from yolox.postprocess_np import yolox_postprocess_np
+from yolox_free.model import get_yolox_model, get_yolox_inference_model
+from yolox_free.postprocess_np import yolox_postprocess_np
+#from yolox.model import get_yolox_model, get_yolox_inference_model
+#from yolox.postprocess_np import yolox_postprocess_np
 from yolo5.model import get_yolo5_model, get_yolo5_inference_model
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.model import get_yolo3_model, get_yolo3_inference_model
@@ -81,7 +83,14 @@ class YOLO_np(object):
         #YOLOv3 model has 9 anchors and 3 feature layers but
         #Tiny YOLOv3 model has 6 anchors and 2 feature layers,
         #so we can calculate feature layers number to get model type
-        num_feature_layers = num_anchors//3
+
+        #num_feature_layers = num_anchors//3
+        if self.model_type.startswith('yolox_free') or self.model_type.startswith('tiny_yolox_free'):
+            anchors_per_layer = 1
+        else:
+            anchors_per_layer = 3
+        num_feature_layers = num_anchors // anchors_per_layer
+        
         try:
             if self.model_type.startswith('scaled_yolo4_') or self.model_type.startswith('yolo5_'):
                 # Scaled-YOLOv4 & YOLOv5 entrance
@@ -194,8 +203,9 @@ class YOLO(object):
         #YOLOv3 model has 9 anchors and 3 feature layers but
         #Tiny YOLOv3 model has 6 anchors and 2 feature layers,
         #so we can calculate feature layers number to get model type
+        
         num_feature_layers = num_anchors//3
-
+        
         if self.model_type.startswith('scaled_yolo4_') or self.model_type.startswith('yolo5_'):
             # Scaled-YOLOv4 & YOLOv5 entrance, enable "elim_grid_sense" by default
             inference_model = get_yolo5_inference_model(self.model_type, self.anchors, num_classes, weights_path=weights_path, input_shape=self.model_image_size + (3,), confidence=self.score, iou_threshold=self.iou, elim_grid_sense=True)
