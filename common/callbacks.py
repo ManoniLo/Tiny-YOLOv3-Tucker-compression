@@ -48,7 +48,11 @@ class EvalCallBack(Callback):
         #so we can calculate feature layers number to get model type
         
         #num_feature_layers = num_anchors//3
-        anchors_per_layer = len(self.anchors[0])
+        if self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
+            anchors_per_layer = 1
+        else:
+            anchors_per_layer = 3
+
         num_feature_layers = num_anchors// anchors_per_layer
         
         if self.model_type.startswith('scaled_yolo4_') or self.model_type.startswith('yolo5_'):
