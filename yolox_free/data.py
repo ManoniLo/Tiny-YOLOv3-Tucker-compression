@@ -113,7 +113,7 @@ def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes, multi_a
     #num_layers = len(anchors)//3 # default setting
     #anchor_mask = [[6,7,8], [3,4,5], [0,1,2]] if num_layers==3 else [[3,4,5], [0,1,2]]
     # Anchor free version...
-    anchors_per_layer = len(anchors[0])
+    anchors_per_layer = 1
     num_layers = len(anchors) // anchors_per_layer 
     anchor_mask = [[1],[1]]
     
