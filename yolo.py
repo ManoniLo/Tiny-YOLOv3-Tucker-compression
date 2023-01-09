@@ -85,7 +85,7 @@ class YOLO_np(object):
         #so we can calculate feature layers number to get model type
 
         #num_feature_layers = num_anchors//3
-        if self.model_type.startswith('yolox_free') or self.model_type.startswith('tiny_yolox_free'):
+        if self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
             anchors_per_layer = 1
         else:
             anchors_per_layer = 3
