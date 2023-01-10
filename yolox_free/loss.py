@@ -362,15 +362,13 @@ def yolox_loss(args, anchors, num_classes, ignore_thresh=.5, label_smoothing=0, 
             xy_loss = K.sum(xy_loss) / batch_size_f
             wh_loss = K.sum(wh_loss) / batch_size_f
             location_loss = xy_loss + wh_loss
-
-        
-
-    confidence_loss = K.sum(confidence_loss) / batch_size_f
-    class_loss = K.sum(class_loss) / batch_size_f
-    loss += location_loss + confidence_loss + class_loss
-    total_location_loss += location_loss
-    total_confidence_loss += confidence_loss
-    total_class_loss += class_loss
+            
+        confidence_loss = K.sum(confidence_loss) / batch_size_f
+        class_loss = K.sum(class_loss) / batch_size_f
+        loss += location_loss + confidence_loss + class_loss
+        total_location_loss += location_loss
+        total_confidence_loss += confidence_loss
+        total_class_loss += class_loss
 
     # Fit for tf 2.0.0 loss shape
     loss = K.expand_dims(loss, axis=-1)
