@@ -39,6 +39,7 @@ def yolo_decode(prediction, anchors, num_classes, input_dims, scale_x_y=None, us
     anchors = np.tile(anchors, (grid_size[0] * grid_size[1], 1))
     anchors = np.expand_dims(anchors, 0)
 
+    '''
     if scale_x_y:
         # Eliminate grid sensitivity trick involved in YOLOv4
         #
@@ -51,8 +52,16 @@ def yolo_decode(prediction, anchors, num_classes, input_dims, scale_x_y=None, us
         box_xy = (box_xy_tmp + x_y_offset) / np.array(grid_size)[::-1]
     else:
         box_xy = (expit(prediction[..., :2]) + x_y_offset) / np.array(grid_size)[::-1]
+    '''
 
-    box_wh = (np.exp(prediction[..., 2:4]) * anchors) / np.array(input_dims)[::-1]
+    #max_grid_size = np.array([26,26])
+    #grid_scale = max_grid_scale / grid_size
+    #grid_scale_tensor = np.tile(grid_scale,(grid_size[0]*grid_size[1],1))
+    #grid_scale_tensor = np.expand_dims(grid_scale_tensor,axis=0)
+    
+    box_xy = (expit(prediction[..., :2]) + x_y_offset) / np.array(grid_size)[::-1]
+    box_wh = np.exp(prediction[...,2:4])
+    
         
     # Sigmoid objectness scores
     objectness = expit(prediction[..., 4])  # p_o (objectness score)

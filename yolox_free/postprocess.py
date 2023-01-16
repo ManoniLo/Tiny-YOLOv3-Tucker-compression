@@ -24,6 +24,13 @@ def yolox_decode(feats, anchors, num_classes, input_shape, scale_x_y=None, calc_
     feats = K.reshape(
         feats, [-1, grid_shape[0], grid_shape[1], num_anchors, num_classes + 5])
 
+
+    #max_grid_size = K.constant([26,26], dtype = K.dtype(feats))
+    #grid_scale = max_grid_size / K.cast(grid_shape, K.dtype(feats))
+    #grid_scale_tensor = K.reshape(grid_scale,[1,1,1,num_anchors,2])
+    
+
+    
     '''
     # Adjust preditions to each spatial grid point and anchor size.
     if scale_x_y:
