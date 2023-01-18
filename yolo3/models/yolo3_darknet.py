@@ -290,7 +290,8 @@ def tiny_yolo3_body_no_leaky(inputs, num_anchors, num_classes):
 
     return Model(inputs, [y1, y2])
 
-
+'''
+# not fixed names.......................
 def tiny_yolo3_body(inputs, num_anchors, num_classes):
     """Create Tiny YOLO_v3 model CNN body in keras."""
     # feature map 2 (26x26x256 for 416 input)
@@ -334,6 +335,52 @@ def tiny_yolo3_body(inputs, num_anchors, num_classes):
     )([x2, f2])
 
     return Model(inputs, [y1, y2])
+'''
+
+def tiny_yolo3_body(inputs, num_anchors, num_classes):
+    """Create Tiny YOLO_v3 model CNN body in keras."""
+    # feature map 2 (26x26x256 for 416 input)
+    f2 = compose(
+        DarknetConv2D_BN_Leaky(16, (3, 3), name = 'conv2d'),
+        MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+        DarknetConv2D_BN_Leaky(32, (3, 3), name = 'conv2d_1'),
+        MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+        DarknetConv2D_BN_Leaky(64, (3, 3), name = 'conv2d_2'),
+        MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+        DarknetConv2D_BN_Leaky(128, (3, 3), name = 'conv2d_3'),
+        MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+        DarknetConv2D_BN_Leaky(256, (3, 3), name = 'conv2d_4'),
+    )(inputs)
+
+    # feature map 1 (13x13x1024 for 416 input)
+    f1 = compose(
+        MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+        DarknetConv2D_BN_Leaky(512, (3, 3), name = 'conv2d_5'),
+        MaxPooling2D(pool_size=(2, 2), strides=(1, 1), padding="same"),
+        DarknetConv2D_BN_Leaky(1024, (3, 3),name = 'conv2d_6'),
+    )(f2)
+
+    # feature map 1 transform
+    x1 = DarknetConv2D_BN_Leaky(256, (1, 1), name = 'conv2d_7')(f1)
+
+    # feature map 1 output (13x13 for 416 input)
+    y1 = compose(
+        DarknetConv2D_BN_Leaky(512, (3, 3), name = "conv2d_8"),
+        DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1"),
+    )(x1)
+
+    # upsample fpn merge for feature map 1 & 2
+    x2 = compose(DarknetConv2D_BN_Leaky(128, (1, 1), name = 'conv2d_10'), UpSampling2D(2))(x1)
+
+    # feature map 2 output (26x26 for 416 input)
+    y2 = compose(
+        Concatenate(),
+        DarknetConv2D_BN_Leaky(256, (3, 3), name = "conv2d_11"),
+        DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_2"),
+    )([x2, f2])
+
+    return Model(inputs, [y1, y2])
+
 
 
 def tiny_yolo3_custom_leaky_body(inputs, num_anchors, num_classes):
