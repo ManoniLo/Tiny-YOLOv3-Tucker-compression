@@ -62,7 +62,7 @@ class EvalCallBack(Callback):
         elif self.model_type.startswith('yolo3_') or self.model_type.startswith('yolo4_') or \
              self.model_type.startswith('tiny_yolo3_') or self.model_type.startswith('tiny_yolo4_'):
             # YOLOv3 & v4 entrance
-            eval_model, _ = get_yolo3_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.model_pruning)
+            eval_model, _ = get_yolo3_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + list((3,)), model_pruning=self.model_pruning)
             self.v5_decode = False
         elif self.model_type.startswith('yolo2_') or self.model_type.startswith('tiny_yolo2_'):
             # YOLOv2 entrance
