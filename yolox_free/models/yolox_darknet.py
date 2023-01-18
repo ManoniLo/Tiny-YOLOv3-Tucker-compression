@@ -123,6 +123,28 @@ def yolox_head(inputs, num_anchors, num_classes,head_chann = 256, width = 1.0):
 
 
 
+def yolo_pafpn(features,in_channels = [512,256], width = 1.0):
+    f1, f2 = features
+    fpn2_lat = DarknetConv2D_BN_Leaky(int(in_channels[0]*width), (1,1), name = 'fpn2_lat_conv')(f1)
+    fpn2_out = UpSampling2D((2,2))(fpn2_lat)
+    fpn2_out = Concatenate()([fpn2_out, f2])
+    f2_out = DarknetConv2D_BN_Leaky(int(in_channels[1]* width), (3,3), name = 'fpn2_conv')(fpn2_out)
+
+    fpn1_out = DarknetConv2D_BN_Leaky(int(in_channels[0]* width), (3,3), name = 'fpn1_conv')(f2_out)
+    fpn1_out = MaxPooling2D((2,2), padding = 'same')(fpn1_out)
+    fpn1_out = Concatenate()([fpn1_out, fpn2_lat])
+
+    f1_out = DarknetConv2D_BN_Leaky(int(in_channels[0]* width), (3,3), name = 'fpn1_conv_2')(fpn1_out)
+
+    print('PFPN f1 output shape', f1_out.get_shape())
+    print('PFPN f2 output shape', f2_out.get_shape())
+
+    return f1_out, f2_out
+
+    
+
+
+
 
 def tiny_yolox_darknet(inputs, num_anchors, num_classes, weights_path):
     """ Tiny-Yolox model with yolov3-tiny backbone.................."""
@@ -137,12 +159,14 @@ def tiny_yolox_darknet(inputs, num_anchors, num_classes, weights_path):
     y1 = base_model.layers[40].output
     y2 = base_model.layers[41].output
 
+    y1,y2 = yolo_pafpn([y1,y2], in_channels = [512,256], width = 0.3)
+
     y1 = yolox_head(y1, num_anchors = num_anchors,
                     num_classes = num_classes,
-                    head_chann = 256, width = 0.6)
+                    head_chann = 256, width = 0.3)
     y2 = yolox_head(y2, num_anchors = num_anchors,
                     num_classes = num_classes,
-                    head_chann = 256, width = 0.6)
+                    head_chann = 256, width = 0.3)
     
     
     return Model(inputs, [y1, y2])
