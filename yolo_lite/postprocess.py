@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow.keras import backend as K
 
 
-def yolo2_boxes_to_corners(box_xy, box_wh):
+def yolo_lite_boxes_to_corners(box_xy, box_wh):
     """Convert YOLOv2 box predictions to bounding box corners."""
     box_mins = box_xy - (box_wh / 2.)
     box_maxes = box_xy + (box_wh / 2.)
@@ -19,7 +19,7 @@ def yolo2_boxes_to_corners(box_xy, box_wh):
 
 
 
-def yolo2_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
+def yolo_lite_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     """Filter YOLOv2 boxes based on object and class confidence."""
     box_scores = box_confidence * box_class_probs
     box_classes = K.argmax(box_scores, axis=-1)
@@ -33,7 +33,7 @@ def yolo2_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     return boxes, scores, classes
 
 
-def yolo2_decode(feats, anchors, num_classes, input_shape, scale_x_y=None, calc_loss=False):
+def yolo_lite_decode(feats, anchors, num_classes, input_shape, scale_x_y=None, calc_loss=False):
     """Decode final layer features to bounding box parameters."""
     num_anchors = len(anchors)
     # Reshape to batch, height, width, num_anchors, box_params.
@@ -73,15 +73,15 @@ def yolo2_decode(feats, anchors, num_classes, input_shape, scale_x_y=None, calc_
     return box_xy, box_wh, box_confidence, box_class_probs
 
 
-def yolo2_eval(yolo_outputs,
+def yolo_lite_eval(yolo_outputs,
               image_shape,
               max_boxes=10,
               score_threshold=.6,
               iou_threshold=.5):
     """Evaluate YOLOv2 model on given input batch and return filtered boxes."""
     box_xy, box_wh, box_confidence, box_class_probs = yolo_outputs
-    boxes = yolo2_boxes_to_corners(box_xy, box_wh)
-    boxes, scores, classes = yolo2_filter_boxes(
+    boxes = yolo_lite_boxes_to_corners(box_xy, box_wh)
+    boxes, scores, classes = yolo_lite_filter_boxes(
         boxes, box_confidence, box_class_probs, threshold=score_threshold)
 
     # Scale boxes back to original image shape.
@@ -102,7 +102,7 @@ def yolo2_eval(yolo_outputs,
     return boxes, scores, classes
 
 
-def yolo2_correct_boxes(box_xy, box_wh, input_shape, image_shape):
+def yolo_lite_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     '''Get corrected boxes'''
     input_shape = K.cast(input_shape, K.dtype(box_xy))
     image_shape = K.cast(image_shape, K.dtype(box_xy))
@@ -135,22 +135,22 @@ def yolo2_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     return boxes
 
 
-def batched_yolo2_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape, scale_x_y):
+def batched_yolo_lite_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape, scale_x_y):
     '''Process Conv layer output'''
-    box_xy, box_wh, box_confidence, box_class_probs = yolo2_decode(feats,
+    box_xy, box_wh, box_confidence, box_class_probs = yolo_lite_decode(feats,
         anchors, num_classes, input_shape, scale_x_y=scale_x_y)
 
     num_anchors = len(anchors)
     grid_shape = K.shape(feats)[1:3] # height, width
     total_anchor_num = grid_shape[0] * grid_shape[1] * num_anchors
 
-    boxes = yolo2_correct_boxes(box_xy, box_wh, input_shape, image_shape)
+    boxes = yolo_lite_correct_boxes(box_xy, box_wh, input_shape, image_shape)
     boxes = K.reshape(boxes, [-1, total_anchor_num, 4])
     box_scores = box_confidence * box_class_probs
     box_scores = K.reshape(box_scores, [-1, total_anchor_num, num_classes])
     return boxes, box_scores
 
-def batched_yolo2_postprocess(args,
+def batched_yolo_lite_postprocess(args,
               anchors,
               num_classes,
               max_boxes=100,
@@ -165,7 +165,7 @@ def batched_yolo2_postprocess(args,
     input_shape = K.shape(yolo_outputs)[1:3] * 32
     batch_size = K.shape(image_shape)[0] # batch size, tensor
 
-    boxes, box_scores = batched_yolo2_boxes_and_scores(yolo_outputs,
+    boxes, box_scores = batched_yolo_lite_boxes_and_scores(yolo_outputs,
         anchors, num_classes, input_shape, image_shape, scale_x_y)
 
     mask = box_scores >= confidence
