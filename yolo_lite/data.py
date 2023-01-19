@@ -146,7 +146,7 @@ def get_y_true_data(box_data, anchors, input_shape, num_classes, multi_anchor_as
     return np.array(y_true_data)
 
 
-class Yolo2DataGenerator(Sequence):
+class YololiteDataGenerator(Sequence):
     def __init__(self, annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment=None, rescale_interval=-1, multi_anchor_assign=False, shuffle=True, **kwargs):
         self.annotation_lines = annotation_lines
         self.batch_size = batch_size
@@ -211,7 +211,7 @@ class Yolo2DataGenerator(Sequence):
 
 
 
-def yolo2_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign):
+def yolo_lite_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign):
     '''data generator for fit_generator'''
     n = len(annotation_lines)
     i = 0
@@ -249,8 +249,8 @@ def yolo2_data_generator(annotation_lines, batch_size, input_shape, anchors, num
         yield [image_data, y_true_data], np.zeros(batch_size)
 
 
-def yolo2_data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment=None, rescale_interval=-1, multi_anchor_assign=False, **kwargs):
+def yolo_lite_data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment=None, rescale_interval=-1, multi_anchor_assign=False, **kwargs):
     n = len(annotation_lines)
     if n==0 or batch_size<=0: return None
-    return yolo2_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign)
+    return yolo_lite_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign)
 
