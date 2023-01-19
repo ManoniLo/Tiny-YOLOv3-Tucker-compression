@@ -9,7 +9,7 @@ sets = ['train', 'val']
 
 ann_sep = " "
 sep = '/'
-image_dir = 'data_object_image_2_416x416/training/image_2'
+image_dir = 'data_object_image_2/training/image_2'
 
 trainval_data = []
 trainval_names = []
@@ -53,4 +53,20 @@ for dset in sets:
     with open(ann_file,'w') as f:
         f.writelines(ann_lines)
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
