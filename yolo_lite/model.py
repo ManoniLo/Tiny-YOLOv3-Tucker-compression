@@ -25,7 +25,7 @@ from common.model_utils import add_metrics, get_pruning_model
 from common.utils import get_anchors
 from yolo_lite.loss import yolo_lite_loss
 #from yolo3.data import yolo3_data_generator
-from yolo_lite.data import yolo2_data_generator
+from yolo_lite.data import yolo_lite_data_generator
 
 
 def get_yolo_lite_model(model_type,
@@ -159,7 +159,7 @@ def yolo_lite_data_generator_wrapper(
     if n == 0 or batch_size <= 0:
         return None
     input_shape = (416, 416)
-    return yolo2_data_generator(
+    return yolo_lite_data_generator(
         annotation_lines,
         batch_size,
         input_shape,
