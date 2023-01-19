@@ -17,10 +17,12 @@ from tensorflow.keras.layers import Input, Lambda
 from tensorflow_model_optimization.sparsity import keras as sparsity
 from PIL import Image
 
-from yolox_free.model import get_yolox_model, get_yolox_inference_model
-from yolox_free.postprocess_np import yolox_postprocess_np
-#from yolox.model import get_yolox_model, get_yolox_inference_model
-#from yolox.postprocess_np import yolox_postprocess_np
+from yolo_lite.model import get_yolo_lite_model
+from yolo_lite.postprocess_np import yolo_lite_postprocess_np
+#from yolox_free.model import get_yolox_model, get_yolox_inference_model
+#from yolox_free.postprocess_np import yolox_postprocess_np
+from yolox.model import get_yolox_model, get_yolox_inference_model
+from yolox.postprocess_np import yolox_postprocess_np
 from yolo5.model import get_yolo5_model, get_yolo5_inference_model
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.model import get_yolo3_model, get_yolo3_inference_model
@@ -87,6 +89,8 @@ class YOLO_np(object):
         #num_feature_layers = num_anchors//3
         if self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
             anchors_per_layer = 1
+        elif self.model_type.startswith('yolo_lite'):
+            anchors_per_layer = 5
         else:
             anchors_per_layer = 3
         num_feature_layers = num_anchors // anchors_per_layer
@@ -105,6 +109,8 @@ class YOLO_np(object):
             elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
                 # YOLOX entrance
                 yolo_model, _ = get_yolox_model(self.model_type, num_feature_layers,num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
+            elif self.model_type.startswith('yolo_lite'):
+                yolo_model, _ = get_yolo_lite_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
             else:
                 raise ValueError('Unsupported model type')
 
