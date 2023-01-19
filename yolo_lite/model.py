@@ -44,7 +44,11 @@ def get_yolo_lite_model(model_type,
     y1 = DarknetConv2D(num_anchors * (num_classes + 5), (1, 1), name="predict_conv_1")(
         y1)
 
-    return Model(inputs, [y1]), None
+    backbone_len = len(base_model.layers)
+
+    print('Backbone length',backbone_len)
+
+    return Model(inputs, [y1]), backbone_len
 
 
 
