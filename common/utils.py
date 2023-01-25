@@ -101,13 +101,15 @@ def get_colors(number, bright=True):
     np.random.seed(None)  # Reset seed to default.
     return colors
 
-def get_dataset(annotation_file, shuffle=True):
+def get_dataset(annotation_file, shuffle=True, seed = None):
     with open(annotation_file) as f:
         lines = f.readlines()
         lines = [line.strip() for line in lines]
 
     if shuffle:
-        np.random.seed(int(time.time()))
+        if seed is None:
+            seed = int(time.time())
+        np.random.seed(seed)
         np.random.shuffle(lines)
         #np.random.seed(None)
 
