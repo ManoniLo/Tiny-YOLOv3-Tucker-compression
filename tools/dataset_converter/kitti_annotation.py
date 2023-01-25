@@ -1,61 +1,43 @@
 import os, argparse
 import numpy as np
 import random
+import sys
 
-trainval_ann_file = '../../annotations/kitti_trainval.txt'
-ann_info_path = '../../annotations/kitti_split'
+sys.path.append('../../')
+
+from common.utils import get_dataset
+
+seed_value = 1
+np.random.seed(seed_value)
+random.seed(seed_value)
+os.environ['PYTHONASHSEED'] = str(seed_value)
+
 ann_path = '../../annotations'
+trainval_ann_file = 'kitti_trainval.txt'
+train_ann_file = 'kitti_train.txt'
+val_ann_file = 'kitti_val.txt'
+
+
 sets = ['train', 'val']
 
-ann_sep = " "
-sep = '/'
-image_dir = 'data_object_image_2/training/image_2'
+split = [0.9, 0.1]
+dataset = get_dataset(os.path.join(ann_path,trainval_ann_file), shuffle = True, seed = seed_value)
+num_data = len(dataset)
+num_train, num_val = round(split[0]*num_data), round(split[1]*num_data)
 
-trainval_data = []
-trainval_names = []
-
-
-with open(trainval_ann_file,'r') as f:
-    for line in f:
-        line = line.split()
-        trainval_data.append(line[1:])
-        trainval_names.append(line[0].split('/')[-1])
+split_datasets = dataset[:num_train], dataset[num_train:]
 
 
-trainval_names = np.array(trainval_names)
-trainval_data = np.array(trainval_data)
+
 
 # files with train/val image names..........................
-for dset in sets:
-    info_name = 'kitti_' + dset + '_names.txt'
+for i,dset in enumerate(sets):
     ann_name = 'kitti_' + dset + '.txt'
-    info_file = os.path.join(ann_info_path,info_name)
     ann_file = os.path.join(ann_path,ann_name)
-
-
-    with open(info_file,'r') as f:
-        fnames = np.array([line.split()[0] + ".png" for line in f])
-
-
-
-    # select train/val lines from trainval.txt.................
-    ann_mask = np.array([name in fnames for name in trainval_names])
-    ann_names = trainval_names[ann_mask]
-    ann_data = trainval_data[ann_mask]
-    
-    ann_names = np.array([sep.join([image_dir,name]) for name in ann_names])
-    ann_lines = [ann_sep.join([ann_names[i]] + ann_data[i] + ["\n"]) for i in range(len(ann_names))]
-
-    ann_lines = np.array(ann_lines)
-
-
-    
     with open(ann_file,'w') as f:
-        f.writelines(ann_lines)
+        for line in split_datasets[i]:
+            f.writelines(line+'\n')
     
-
-
-
 
 
 
