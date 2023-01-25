@@ -8,6 +8,7 @@ from tensorflow_model_optimization.sparsity import keras as sparsity
 from tensorflow.keras.callbacks import Callback
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+from yolo_fastest.model import get_yolo_fastest_model
 from yolox_free.model import get_yolox_model
 #from yolox.model import get_yolox_model
 from yolo5.model import get_yolo5_model
@@ -27,7 +28,7 @@ class DatasetShuffleCallBack(Callback):
 class EvalCallBack(Callback):
     def __init__(self, model_type, eval_type, annotation_lines, anchors, class_names, model_image_size, model_pruning, log_dir, eval_epoch_interval=10, save_eval_checkpoint=False, elim_grid_sense=False):
         self.model_type = model_type
-        self.eval_type = eval_type,
+        self.eval_type = eval_type
         self.annotation_lines = annotation_lines
         self.anchors = anchors
         self.class_names = class_names
@@ -71,6 +72,10 @@ class EvalCallBack(Callback):
             self.v5_decode = False
         elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
             eval_model, _ = get_yolox_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + list((3,)), model_pruning=self.model_pruning)
+            self.v5_decode = False
+        elif self.model_type.startswith('yolo_fastest'):
+            num_anchors = len(self.anchors) // num_feature_layers
+            eval_model,_ = get_yolo_fastest_model(self.model_type,num_feature_layers, num_anchors, num_classes, model_pruning = self.model_pruning)
             self.v5_decode = False
         else:
             raise ValueError('Unsupported model type')
@@ -124,7 +129,7 @@ class EvalCallBack(Callback):
         #return eval_model
 
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_begin(self, epoch, logs=None):
         if (epoch+1) % self.eval_epoch_interval == 0:
             # Do eval every eval_epoch_interval epochs
             eval_model = self.update_eval_model(self.model)
