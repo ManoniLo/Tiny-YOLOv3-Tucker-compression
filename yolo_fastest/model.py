@@ -3,7 +3,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Lambda
 from tensorflow.keras.optimizers import Adam
 from yolo3.loss import yolo3_loss
-from yolo3.data import yolo3_data_generator
+from yolo3.kitti.data import yolo3_data_generator
 from common.model_utils import add_metrics, get_pruning_model
 from common.utils import get_anchors
 
