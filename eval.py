@@ -21,9 +21,12 @@ import onnxruntime
 
 from yolox_free.postprocess_np import yolox_postprocess_np
 from yolo5.postprocess_np import yolo5_postprocess_np
-from yolo3.postprocess_np import yolo3_postprocess_np
+from yolo3.postprocess_np import yolo3_postprocess_np as yolo3_postprocess_np_VOC
+from yolo3.kitti.postprocess_np import yolo3_postprocess_np as yolo3_postprocess_np_KITTI
 from yolo2.postprocess_np import yolo2_postprocess_np
-from common.data_utils import preprocess_image
+from common.data_utils import preprocess_image as preprocess_image_VOC
+from common.data_utils_kitti import preprocess_image as preprocess_image_KITTI
+
 from common.utils import get_dataset, get_classes, get_anchors, get_colors, draw_boxes, optimize_tf_gpu, get_custom_objects
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -333,7 +336,15 @@ def yolo_predict_onnx(model, image, anchors, num_classes, conf_threshold, elim_g
     return pred_boxes, pred_classes, pred_scores
 
 
-def yolo_predict_keras(model, image, anchors, num_classes, model_image_size, conf_threshold, elim_grid_sense, v5_decode):
+def yolo_predict_keras(model, data_type, image, anchors, num_classes, model_image_size, conf_threshold, elim_grid_sense, v5_decode):
+
+    if data_type == 'VOC':
+        preprocess_image = preprocess_image_VOC
+    elif data_type == 'KITTI':
+        preprocess_image = preprocess_image_KITTI
+    else:
+        raise ValueError('Undefined data type!')
+    
     image_data = preprocess_image(image, model_image_size)
     #origin image shape, in (height, width) format
     image_shape = tuple(reversed(image.size))
@@ -348,12 +359,19 @@ def yolo_predict_keras(model, image, anchors, num_classes, model_image_size, con
         if v5_decode:
             pred_boxes, pred_classes, pred_scores = yolo5_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=True) #enable "elim_grid_sense" by default
         else:
+            if data_type == 'VOC':
+                yolo3_postprocess_np = yolo3_postprocess_np_VOC
+            elif data_type == 'KITTI':
+                yolo3_postprocess_np = yolo3_postprocess_np_KITTI
+            else:
+                raise ValueError('Undefined data type!')
+            
             pred_boxes, pred_classes, pred_scores = yolo3_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
 
     return pred_boxes, pred_classes, pred_scores
 
 
-def get_prediction_class_records(model, model_format, annotation_records, anchors, class_names, model_image_size, conf_threshold, elim_grid_sense, v5_decode, save_result):
+def get_prediction_class_records(model, model_format, data_type, annotation_records, anchors, class_names, model_image_size, conf_threshold, elim_grid_sense, v5_decode, save_result):
     '''
     Do the predict with YOLO model on annotation images to get predict class dict
 
@@ -402,7 +420,7 @@ def get_prediction_class_records(model, model_format, annotation_records, anchor
             pred_boxes, pred_classes, pred_scores = yolo_predict_onnx(model, image, anchors, len(class_names), conf_threshold, elim_grid_sense, v5_decode)
         # normal keras h5 model
         elif model_format == 'H5':
-            pred_boxes, pred_classes, pred_scores = yolo_predict_keras(model, image, anchors, len(class_names), model_image_size, conf_threshold, elim_grid_sense, v5_decode)
+            pred_boxes, pred_classes, pred_scores = yolo_predict_keras(model, data_type, image, anchors, len(class_names), model_image_size, conf_threshold, elim_grid_sense, v5_decode)
         else:
             raise ValueError('invalid model format')
 
@@ -630,7 +648,8 @@ def draw_rec_prec(rec, prec, mrec, mprec, class_name, ap):
     plt.fill_between(area_under_curve_x, 0, area_under_curve_y, alpha=0.2, edgecolor='r')
     # set window title
     fig = plt.gcf() # gcf - get current figure
-    fig.canvas.set_window_title('AP ' + class_name)
+    #fig.canvas.set_window_title('AP ' + class_name)
+    fig.suptitle('AP ' + class_name)
     # set plot title
     plt.title('class: ' + class_name + ' AP = {}%'.format(ap*100))
     #plt.suptitle('This is a somewhat long figure title', fontsize=16)
@@ -679,7 +698,7 @@ def generate_rec_prec_html(mrec, mprec, scores, class_name, ap):
 
     # prepare plot figure
     plt_title = 'class: ' + class_name + ' AP = {}%'.format(ap*100)
-    plt = bokeh_plotting.figure(plot_height=200 ,plot_width=200, tools="", toolbar_location=None,
+    plt = bokeh_plotting.figure(height=200 ,width=200, tools="", toolbar_location=None,
                title=plt_title, sizing_mode="scale_width")
     plt.background_fill_color = "#f5f5f5"
     plt.grid.grid_line_color = "white"
@@ -868,7 +887,7 @@ def calc_AP(gt_records, pred_records, class_name, iou_threshold, show_result):
     ap, mrec, mprec = voc_ap(rec, prec)
     if show_result:
         draw_rec_prec(rec, prec, mrec, mprec, class_name, ap)
-        generate_rec_prec_html(mrec, mprec, scores, class_name, ap)
+        #generate_rec_prec_html(mrec, mprec, scores, class_name, ap)
 
     return ap, true_positive_count
 
@@ -1241,10 +1260,10 @@ def eval_AP(model, model_format, annotation_lines, anchors, class_names, model_i
     Compute AP for detection model on annotation dataset
     '''
     annotation_records, gt_classes_records = annotation_parse(annotation_lines, class_names)
-    pred_classes_records = get_prediction_class_records(model, model_format, annotation_records, anchors, class_names, model_image_size, conf_threshold, elim_grid_sense, v5_decode, save_result)
+    pred_classes_records = get_prediction_class_records(model, model_format, eval_type, annotation_records, anchors, class_names, model_image_size, conf_threshold, elim_grid_sense, v5_decode, save_result)
     AP = 0.0
 
-    if eval_type == 'VOC':
+    if eval_type == 'VOC' or eval_type == 'KITTI':
         AP, APs = compute_mAP_PascalVOC(annotation_records, gt_classes_records, pred_classes_records, class_names, iou_threshold)
 
         if class_filter is not None:
