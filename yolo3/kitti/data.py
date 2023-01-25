@@ -198,7 +198,7 @@ def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes, multi_a
 
 class Yolo3DataGenerator(Sequence):
     def __init__(self, annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment=None,
-                 random_padd = False, letterbox_padd = True, rescale_interval=-1, multi_anchor_assign=False, shuffle=True,
+                 random_padd = False, letterbox_padd = False, rescale_interval=-1, multi_anchor_assign=False, shuffle=True,
                  **kwargs):
         self.annotation_lines = annotation_lines
         self.batch_size = batch_size
