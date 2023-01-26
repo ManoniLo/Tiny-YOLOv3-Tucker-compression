@@ -11,6 +11,7 @@ def yolo_correct_boxes(predictions, img_shape, model_image_size, letterbox_padd 
     box_wh = predictions[..., 2:4]
     objectness = np.expand_dims(predictions[..., 4], -1)
     class_scores = predictions[..., 5:]
+    image_shape = np.array(img_shape, dtype='float32')
 
     # padding by mantaining the aspect ratio, otherwise stretch image to model input size..................
     if letterbox_padd:
