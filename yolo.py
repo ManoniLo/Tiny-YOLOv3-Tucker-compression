@@ -17,12 +17,14 @@ from tensorflow.keras.layers import Input, Lambda
 from tensorflow_model_optimization.sparsity import keras as sparsity
 from PIL import Image
 
+from yolo_fastest.model import get_yolo_fastest_model
+
 from yolo_lite.model import get_yolo_lite_model
 from yolo_lite.postprocess_np import yolo_lite_postprocess_np
-#from yolox_free.model import get_yolox_model, get_yolox_inference_model
-#from yolox_free.postprocess_np import yolox_postprocess_np
-from yolox.model import get_yolox_model, get_yolox_inference_model
-from yolox.postprocess_np import yolox_postprocess_np
+from yolox_free.model import get_yolox_model, get_yolox_inference_model
+from yolox_free.postprocess_np import yolox_postprocess_np
+#from yolox.model import get_yolox_model, get_yolox_inference_model
+#from yolox.postprocess_np import yolox_postprocess_np
 from yolo5.model import get_yolo5_model, get_yolo5_inference_model
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.model import get_yolo3_model, get_yolo3_inference_model
@@ -111,6 +113,8 @@ class YOLO_np(object):
                 yolo_model, _ = get_yolox_model(self.model_type, num_feature_layers,num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
             elif self.model_type.startswith('yolo_lite'):
                 yolo_model, _ = get_yolo_lite_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
+            elif self.model_type.startswith('yolo_fastest'):
+                yolo_model,_ = get_yolo_fastest_model(self.model_type, num_feature_layers,num_anchors // num_feature_layers, num_classes, model_pruning=self.pruning_model)
             else:
                 raise ValueError('Unsupported model type')
 
@@ -167,6 +171,8 @@ class YOLO_np(object):
             out_boxes, out_classes, out_scores = yolo2_postprocess_np(self.yolo_model.predict(image_data), image_shape, self.anchors, len(self.class_names), self.model_image_size, max_boxes=100, confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
         elif self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
             out_boxes, out_classes, out_scores = yolox_postprocess_np(self.yolo_model.predict(image_data), image_shape, self.anchors, len(self.class_names), self.model_image_size, max_boxes=100, confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
+        elif self.model_type.startswith('yolo_fastest'):
+            out_boxes, out_classes, out_scores = yolo3_postprocess_np(self.yolo_model.predict(image_data), image_shape, self.anchors, len(self.class_names), self.model_image_size, max_boxes=100, confidence=self.score, iou_threshold=self.iou, elim_grid_sense=self.elim_grid_sense)
         else:
             raise ValueError('Unsupported model type')
 
