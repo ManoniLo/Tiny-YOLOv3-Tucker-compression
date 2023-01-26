@@ -129,7 +129,7 @@ class EvalCallBack(Callback):
         #return eval_model
 
 
-    def on_epoch_begin(self, epoch, logs=None):
+    def on_epoch_end(self, epoch, logs=None):
         if (epoch+1) % self.eval_epoch_interval == 0:
             # Do eval every eval_epoch_interval epochs
             eval_model = self.update_eval_model(self.model)
