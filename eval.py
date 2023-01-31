@@ -23,6 +23,8 @@ from yolox_free.postprocess_np import yolox_postprocess_np
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.postprocess_np import yolo3_postprocess_np as yolo3_postprocess_np_VOC
 from yolo3.kitti.postprocess_np import yolo3_postprocess_np as yolo3_postprocess_np_KITTI
+from yolo_lite.kitti.postprocess_np import yolo_lite_postprocess_np as yolo_lite_postprocess_np_KITTI
+from yolo_lite.postprocess_np import yolo_lite_postprocess_np as yolo_lite_postprocess_np_VOC
 from yolo2.postprocess_np import yolo2_postprocess_np
 from common.data_utils import preprocess_image as preprocess_image_VOC
 from common.data_utils_kitti import preprocess_image as preprocess_image_KITTI
@@ -340,8 +342,12 @@ def yolo_predict_keras(model, data_type, image, anchors, num_classes, model_imag
 
     if data_type == 'VOC':
         preprocess_image = preprocess_image_VOC
+        yolo3_postprocess_np = yolo3_postprocess_np_VOC
+        yolo_lite_postprocess_np = yolo_lite_postprocess_np_VOC
     elif data_type == 'KITTI':
         preprocess_image = preprocess_image_KITTI
+        yolo3_postprocess_np = yolo3_postprocess_np_KITTI
+        yolo_lite_postprocess_np = yolo_lite_postprocess_np_KITTI
     else:
         raise ValueError('Undefined data type!')
     
@@ -352,20 +358,14 @@ def yolo_predict_keras(model, data_type, image, anchors, num_classes, model_imag
     prediction = model.predict([image_data])
     if len(anchors) == 5:
         # YOLOv2 use 5 anchors
-        pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+        #pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+         pred_boxes, pred_classes, pred_scores = yolo_lite_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
     elif len(anchors) == 2:
         pred_boxes, pred_classes, pred_scores = yolox_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
     else:
         if v5_decode:
             pred_boxes, pred_classes, pred_scores = yolo5_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=True) #enable "elim_grid_sense" by default
-        else:
-            if data_type == 'VOC':
-                yolo3_postprocess_np = yolo3_postprocess_np_VOC
-            elif data_type == 'KITTI':
-                yolo3_postprocess_np = yolo3_postprocess_np_KITTI
-            else:
-                raise ValueError('Undefined data type!')
-            
+        else:            
             pred_boxes, pred_classes, pred_scores = yolo3_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
 
     return pred_boxes, pred_classes, pred_scores
