@@ -10,6 +10,7 @@ from tensorflow.keras.callbacks import Callback
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 from yolo_fastest.model import get_yolo_fastest_model
 from yolox_free.model import get_yolox_model
+from yolo_lite.model import get_yolo_lite_model
 #from yolox.model import get_yolox_model
 from yolo5.model import get_yolo5_model
 from yolo3.model import get_yolo3_model
@@ -52,6 +53,8 @@ class EvalCallBack(Callback):
         #num_feature_layers = num_anchors//3
         if self.model_type.startswith('yolox_') or self.model_type.startswith('tiny_yolox_'):
             anchors_per_layer = 1
+        elif self.model_type.startswith('yolo_lite'):
+            anchors_per_layer = 5
         else:
             anchors_per_layer = 3
 
@@ -76,6 +79,9 @@ class EvalCallBack(Callback):
         elif self.model_type.startswith('yolo_fastest'):
             num_anchors = len(self.anchors) // num_feature_layers
             eval_model,_ = get_yolo_fastest_model(self.model_type,num_feature_layers, num_anchors, num_classes, model_pruning = self.model_pruning)
+            self.v5_decode = False
+        elif self.model_type.startswith('yolo_lite'):
+            eval_model,_ = get_yolo_lite_model(self.model_type,num_feature_layers, num_anchors, num_classes, model_pruning = self.model_pruning)
             self.v5_decode = False
         else:
             raise ValueError('Unsupported model type')
