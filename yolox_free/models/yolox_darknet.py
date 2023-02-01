@@ -151,8 +151,9 @@ def tiny_yolox_darknet(inputs, num_anchors, num_classes, weights_path):
      
     # TODO: get darknet class number from class file
     num_classes_coco = 80
-    base_model = tiny_yolo3_body(inputs, num_anchors, num_classes_coco)
-    base_model.load_weights(weights_path, by_name=True,skip_mismatch = True)
+    num_anchors_coco = 3
+    base_model = tiny_yolo3_body(inputs, num_anchors_coco, num_classes_coco)
+    base_model.load_weights(weights_path, by_name=False),#skip_mismatch = True)
     print("Load weights {}.".format(weights_path))
 
     # get conv output in original network
