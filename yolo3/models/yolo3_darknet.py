@@ -454,15 +454,16 @@ def custom_tiny_yolo3_body_no_leaky(inputs, num_anchors, num_classes, weights_pa
     return Model(inputs, [y1, y2])
 
 
-def custom_tiny_yolo3_body(inputs, num_anchors, num_classes, weights_path):
+def custom_tiny_yolo3_body(inputs, num_anchors, num_classes, weights_path = None):
     """Create a custom Tiny YOLO_v3 model, use
     pre-trained weights from darknet and fit
     for our target classes."""
     # TODO: get darknet class number from class file
     num_classes_coco = 80
     base_model = tiny_yolo3_body(inputs, num_anchors, num_classes_coco)
-    base_model.load_weights(weights_path, by_name=False)
-    print("Load weights {}.".format(weights_path))
+    if weights_path is not None:
+        base_model.load_weights(weights_path, by_name=False)
+        print("Load weights {}.".format(weights_path))
 
     # get conv output in original network
     # y1 = base_model.get_layer('leaky_re_lu_8').output
