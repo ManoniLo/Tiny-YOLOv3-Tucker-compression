@@ -17,10 +17,12 @@ from tensorflow.keras.layers import Input, Lambda
 from tensorflow_model_optimization.sparsity import keras as sparsity
 from PIL import Image
 
+
+from yolo3_tucker.model import *
 from yolo_fastest.model import get_yolo_fastest_model
 
 from yolo_lite.model import get_yolo_lite_model
-from yolo_lite.postprocess_np import yolo_lite_postprocess_np
+from yolo_lite.kitti.postprocess_np import yolo_lite_postprocess_np
 from yolox_free.model import get_yolox_model, get_yolox_inference_model
 from yolox_free.postprocess_np import yolox_postprocess_np
 #from yolox.model import get_yolox_model, get_yolox_inference_model
@@ -101,6 +103,16 @@ class YOLO_np(object):
             if self.model_type.startswith('scaled_yolo4_') or self.model_type.startswith('yolo5_'):
                 # Scaled-YOLOv4 & YOLOv5 entrance
                 yolo_model, _ = get_yolo5_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.pruning_model)
+            elif self.model_type.startswith('tiny_yolo3_darknet_tucker'):
+                layer_cfvalues = {'conv2d_2': 0.6, 'conv2d_3': 0.6, 'conv2d_4': 0.5,
+                                  'conv2d_5': 0.5, 'conv2d_6': 0.1, 'conv2d_8': 0.2, 'conv2d_11': 0.1}
+
+
+                fr_yolo_type = 'tiny_yolo3_darknet'
+                yolo_model,_ = get_yolo3_comp_model(fr_yolo_type, num_feature_layers, num_anchors, num_classes,
+                                                    layer_cfvalues, compute_decomp_weights = False, input_shape = self.model_image_size + (3,), model_pruning = self.pruning_model)
+
+                    
             elif self.model_type.startswith('yolo3_') or self.model_type.startswith('yolo4_') or \
                  self.model_type.startswith('tiny_yolo3_') or self.model_type.startswith('tiny_yolo4_'):
                 # YOLOv3 & v4 entrance
