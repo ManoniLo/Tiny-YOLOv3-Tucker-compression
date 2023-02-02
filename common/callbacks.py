@@ -13,6 +13,7 @@ from yolox_free.model import get_yolox_model
 from yolo_lite.model import get_yolo_lite_model
 #from yolox.model import get_yolox_model
 from yolo5.model import get_yolo5_model
+from yolo3_tucker.model import get_yolo3_comp_model
 from yolo3.model import get_yolo3_model
 from yolo2.model import get_yolo2_model
 from eval import eval_AP
@@ -64,6 +65,17 @@ class EvalCallBack(Callback):
             # Scaled-YOLOv4 & YOLOv5 entrance
             eval_model, _ = get_yolo5_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.model_pruning)
             self.v5_decode = True
+        elif self.model_type.startswith('tiny_yolo3_darknet_tucker'):
+            layer_cfvalues = {'conv2d_2': 0.6, 'conv2d_3': 0.6, 'conv2d_4': 0.5,
+                              'conv2d_5': 0.5, 'conv2d_6': 0.1, 'conv2d_8': 0.2, 'conv2d_11': 0.1}
+
+            eval_model,_ = get_yolo3_comp_model(self.model_type, num_feature_layers, num_anchors, num_classes,
+                                                layer_cfvalues, compute_decomp_weights = False, input_shape = self.model_image_size + list((3,)), model_pruning = self.model_pruning)
+
+
+            self.v5_decode = False
+            
+            
         elif self.model_type.startswith('yolo3_') or self.model_type.startswith('yolo4_') or \
              self.model_type.startswith('tiny_yolo3_') or self.model_type.startswith('tiny_yolo4_'):
             # YOLOv3 & v4 entrance
