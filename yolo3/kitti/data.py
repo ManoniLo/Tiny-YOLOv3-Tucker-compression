@@ -265,8 +265,8 @@ class Yolo3DataGenerator(Sequence):
 
 
 
-def yolo3_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes,
-                         random_padd = False, letterbox_padd = False, enhance_augment, rescale_interval, multi_anchor_assign):
+def yolo3_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign,
+                         random_padd = False, letterbox_padd = False):
     '''data generator for fit_generator'''
     n = len(annotation_lines)
     i = 0
