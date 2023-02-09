@@ -25,3 +25,4 @@ imgaug
 imagecorruptions
 bokeh
 tidecv
+tensorly==0.7.0
