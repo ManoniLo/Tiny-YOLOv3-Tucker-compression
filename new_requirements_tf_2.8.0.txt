@@ -26,3 +26,4 @@ imagecorruptions
 bokeh
 tidecv
 tensorly==0.7.0
+git+https://github.com/ahwillia/tensortools
