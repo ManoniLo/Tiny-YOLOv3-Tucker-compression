@@ -28,7 +28,8 @@ class DatasetShuffleCallBack(Callback):
 
 
 class EvalCallBack(Callback):
-    def __init__(self, model_type, eval_type, annotation_lines, anchors, class_names, model_image_size, model_pruning, log_dir, eval_epoch_interval=10, save_eval_checkpoint=False, elim_grid_sense=False):
+    def __init__(self, model_type, eval_type, annotation_lines, anchors, class_names, model_image_size, model_pruning, log_dir,
+                 layer_cfvalues = None, eval_epoch_interval=10, save_eval_checkpoint=False, elim_grid_sense=False):
         self.model_type = model_type
         self.eval_type = eval_type
         self.annotation_lines = annotation_lines
@@ -37,6 +38,7 @@ class EvalCallBack(Callback):
         self.model_image_size = model_image_size
         self.model_pruning = model_pruning
         self.log_dir = log_dir
+        self.layer_cfvalues = layer_cfvalues
         self.eval_epoch_interval = eval_epoch_interval
         self.save_eval_checkpoint = save_eval_checkpoint
         self.elim_grid_sense = elim_grid_sense
@@ -66,8 +68,10 @@ class EvalCallBack(Callback):
             eval_model, _ = get_yolo5_model(self.model_type, num_feature_layers, num_anchors, num_classes, input_shape=self.model_image_size + (3,), model_pruning=self.model_pruning)
             self.v5_decode = True
         elif self.model_type.startswith('tiny_yolo3_darknet_tucker'):
-            layer_cfvalues = {'conv2d_2': 0.6, 'conv2d_3': 0.6, 'conv2d_4': 0.5,
-                              'conv2d_5': 0.5, 'conv2d_6': 0.1, 'conv2d_8': 0.2, 'conv2d_11': 0.1}
+            if self.layer_cfvalues:
+                layer_cfvalues = self.layer_cfvalues
+            else:
+                layer_cfvalues = {}
 
             eval_model,_ = get_yolo3_comp_model(self.model_type, num_feature_layers, num_anchors, num_classes,
                                                 layer_cfvalues, compute_decomp_weights = False, input_shape = self.model_image_size + list((3,)), model_pruning = self.model_pruning)
