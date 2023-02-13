@@ -19,7 +19,8 @@ import tensorflow as tf
 #import MNN
 import onnxruntime
 
-from yolox_free.postprocess_np import yolox_postprocess_np
+from yolox_free.postprocess_np import yolox_postprocess_np as yolox_postprocess_np_VOC
+from yolox_free.kitti.postprocess_np import yolox_postprocess_np as yolox_postprocess_np_KITTI
 from yolo5.postprocess_np import yolo5_postprocess_np
 from yolo3.postprocess_np import yolo3_postprocess_np as yolo3_postprocess_np_VOC
 from yolo3.kitti.postprocess_np import yolo3_postprocess_np as yolo3_postprocess_np_KITTI
@@ -344,10 +345,12 @@ def yolo_predict_keras(model, data_type, image, anchors, num_classes, model_imag
         preprocess_image = preprocess_image_VOC
         yolo3_postprocess_np = yolo3_postprocess_np_VOC
         yolo_lite_postprocess_np = yolo_lite_postprocess_np_VOC
+        yolox_postprocess_np = yolox_postprocess_np_VOC
     elif data_type == 'KITTI':
         preprocess_image = preprocess_image_KITTI
         yolo3_postprocess_np = yolo3_postprocess_np_KITTI
         yolo_lite_postprocess_np = yolo_lite_postprocess_np_KITTI
+        yolox_postprocess_np = yolox_postprocess_np_KITTI
     else:
         raise ValueError('Undefined data type!')
     
