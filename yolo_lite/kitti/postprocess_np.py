@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding=utf-8 -*-
 
+import numpy as np
 from common.yolo_postprocess_np import yolo_decode, yolo_handle_predictions, yolo_adjust_boxes
 
 def yolo_correct_boxes(predictions, img_shape, model_image_size, letterbox_padd = False):
