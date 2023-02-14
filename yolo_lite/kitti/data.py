@@ -44,10 +44,10 @@ def get_ground_truth_data(annotation_line, input_shape, augment=True, random_pad
     if random_padd:
         image, padding_size, padding_offset = random_resize_crop_pad(image, target_size=model_input_size)
     elif letterbox_padd:
-        image, padding_size, offset = letterbox_resize(image, target_size=model_input_size, return_padding_info=True)
+        image, padding_size, padding_offset = letterbox_resize(image, target_size=model_input_size, return_padding_info=True)
     else:
         image = image.resize(tuple(reversed(model_input_size)))
-        padding_size, offset = model_input_size, (0,0)
+        padding_size, padding_offset = model_input_size, (0,0)
         
 
     # random horizontal flip image
@@ -305,7 +305,8 @@ class YololiteDataGenerator(Sequence):
 
 
 
-def yolo_lite_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign):
+def yolo_lite_data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, enhance_augment, rescale_interval, multi_anchor_assign,
+                             random_padd = False, letterbox_padd = False):
     '''data generator for fit_generator'''
     n = len(annotation_lines)
     i = 0
@@ -324,7 +325,7 @@ def yolo_lite_data_generator(annotation_lines, batch_size, input_shape, anchors,
         for b in range(batch_size):
             if i==0:
                 np.random.shuffle(annotation_lines)
-            image, box = get_ground_truth_data(annotation_lines[i], input_shape, augment=True)
+            image, box = get_ground_truth_data(annotation_lines[i], input_shape, augment=True, random_padd = random_padd, letterbox_padd = letterbox_padd)
             image_data.append(image)
             box_data.append(box)
             i = (i+1) % n
