@@ -125,14 +125,23 @@ def yolo3_body(inputs, num_anchors, num_classes, weights_path=None):
 
     model = Model(inputs, [y1, y2, y3])
     #readjust final conv names........
-    final_conv_1 = model.get_layer(name = 'conv2d_58')
-    final_conv_1.__name = 'predict_conv1'
+    #final_conv_1 = model.get_layer(name = 'conv2d_58')
+    #final_conv_1.__name = 'predict_conv1'
 
-    final_conv_2 = model.get_layer(name = 'conv2d_66')
-    final_conv_2.__name = 'predict_conv2'
+    #final_conv_2 = model.get_layer(name = 'conv2d_66')
+    #final_conv_2.__name = 'predict_conv2'
 
-    final_conv_3 = model.get_layer(name = 'conv2d_74')
-    final_conv_3.__name = 'predict_conv3'
+    #final_conv_3 = model.get_layer(name = 'conv2d_74')
+    #final_conv_3.__name = 'predict_conv3'
+
+    out_1, out_2, out_3 = [layer.output for layer in model.layers[-3:]]
+    out_1.__name = 'predict_conv1'
+    out_2.__name = 'predict_conv2'
+    out_3.__name = 'predict_conv3'
+    
+    
+
+    
     
 
     return model
