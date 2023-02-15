@@ -140,10 +140,6 @@ def yolo3_body(inputs, num_anchors, num_classes, weights_path=None):
     out_3.__name = 'predict_conv3'
     
     
-
-    
-    
-
     return model
 
 
