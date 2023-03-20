@@ -305,8 +305,7 @@ def yolo_predict_pb(model, image, anchors, num_classes, model_image_size, conf_t
 
     return pred_boxes, pred_classes, pred_scores
 
-
-def yolo_predict_onnx(model, image, anchors, num_classes, conf_threshold, elim_grid_sense, v5_decode):
+def yolo_predict_onnx(model, data_type, image, anchors, num_classes, conf_threshold, elim_grid_sense, v5_decode):
     input_tensors = []
     for i, input_tensor in enumerate(model.get_inputs()):
         input_tensors.append(input_tensor)
@@ -316,6 +315,19 @@ def yolo_predict_onnx(model, image, anchors, num_classes, conf_threshold, elim_g
 
     batch, height, width, channel = input_tensors[0].shape
     model_image_size = (height, width)
+
+    if data_type == 'VOC':
+        preprocess_image = preprocess_image_VOC
+        yolo3_postprocess_np = yolo3_postprocess_np_VOC
+        yolo_lite_postprocess_np = yolo_lite_postprocess_np_VOC
+        yolox_postprocess_np = yolox_postprocess_np_VOC
+    elif data_type == 'KITTI':
+        preprocess_image = preprocess_image_KITTI
+        yolo3_postprocess_np = yolo3_postprocess_np_KITTI
+        yolo_lite_postprocess_np = yolo_lite_postprocess_np_KITTI
+        yolox_postprocess_np = yolox_postprocess_np_KITTI
+    else:
+        raise ValueError('Undefined data type!')
 
     # prepare input image
     image_data = preprocess_image(image, model_image_size)
@@ -329,7 +341,10 @@ def yolo_predict_onnx(model, image, anchors, num_classes, conf_threshold, elim_g
     if len(anchors) == 5:
         # YOLOv2 use 5 anchors and have only 1 prediction
         assert len(prediction) == 1, 'invalid YOLOv2 prediction number.'
-        pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction[0], image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+        #pred_boxes, pred_classes, pred_scores = yolo2_postprocess_np(prediction[0], image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
+        pred_boxes, pred_classes, pred_scores = yolo_lite_postprocess_np(prediction[0], image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)    
+    elif len(anchors) == 2:
+        pred_boxes, pred_classes, pred_scores = yolox_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=elim_grid_sense)
     else:
         if v5_decode:
             pred_boxes, pred_classes, pred_scores = yolo5_postprocess_np(prediction, image_shape, anchors, num_classes, model_image_size, max_boxes=100, confidence=conf_threshold, elim_grid_sense=True) #enable "elim_grid_sense" by default
@@ -420,7 +435,7 @@ def get_prediction_class_records(model, model_format, data_type, annotation_reco
             pred_boxes, pred_classes, pred_scores = yolo_predict_pb(model, image, anchors, len(class_names), model_image_size, conf_threshold, elim_grid_sense, v5_decode)
         # support of ONNX model
         elif model_format == 'ONNX':
-            pred_boxes, pred_classes, pred_scores = yolo_predict_onnx(model, image, anchors, len(class_names), conf_threshold, elim_grid_sense, v5_decode)
+            pred_boxes, pred_classes, pred_scores = yolo_predict_onnx(model, data_type, image, anchors, len(class_names), conf_threshold, elim_grid_sense, v5_decode)
         # normal keras h5 model
         elif model_format == 'H5':
             pred_boxes, pred_classes, pred_scores = yolo_predict_keras(model, data_type, image, anchors, len(class_names), model_image_size, conf_threshold, elim_grid_sense, v5_decode)
