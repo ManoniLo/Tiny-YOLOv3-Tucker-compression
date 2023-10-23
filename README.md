@@ -84,9 +84,8 @@ For other model, just do in a similar way, but specify different model type, wei
 ## Guide of train/evaluate/demo
 
 ### Train
-1. Generate train/val/test annotation file and class names file.
-
-    Data annotation file format:
+1. Annotation file format is the same as the original repository.
+   
     * One row for one image in annotation file;
     * Row format: `image_file_path box1 box2 ... boxN`;
     * Box format: `x_min,y_min,x_max,y_max,class_id` (no space).
@@ -97,7 +96,7 @@ For other model, just do in a similar way, but specify different model type, wei
     ...
 
     ```
-    1. For KITTI style dataset, you can use [kitti_annotation.py]() to convert original dataset to our annotation file.
+    1. For KITTI style dataset, you can use [kitti_annotation.py](https://github.com/ManoniLo/Tiny-YOLOv3-Tucker-compression/blob/pedestrian_tracking/tools/dataset_converter/kitti_annotation.py) to convert original dataset to annotation file.
        To generate KITTI annotation files run the script kitti_annotation.py in the same folder which contains scripts to generate
        Pascal VOC and COCO annotations.
        ```
@@ -107,7 +106,7 @@ For other model, just do in a similar way, but specify different model type, wei
 
    If you want to download KITTI dataset for 2D object detection go to the following link https://www.cvlibs.net/datasets/kitti/eval_3dobject.php.
 
-   For class names file format, refer to  [kitti_classes.txt]()
+   For class names file format, refer to  [kitti_classes.txt](https://github.com/ManoniLo/Tiny-YOLOv3-Tucker-compression/blob/pedestrian_tracking/configs/kitti_classes.txt)
 
 1. If you're training YOLOv4/v3/v2 models with Darknet based backbones, make sure you have converted pretrain model weights as in [Quick Start](https://github.com/david8862/keras-YOLOv3-model-set#quick-start) part
 
