@@ -6,12 +6,16 @@
 
 This is an extension of this repository https://github.com/david8862/keras-YOLOv3-model-set where a TF Keras implementation is provided for YOLO v4/v3/v2
 models with several backbones.
-In this repository the support for network compression with Tucker tensor decomposition was added 
 
 
+## Main changes
+- Support for network compression with Tucker Tensor decomposition was added.  The folder 'yolo3_tucker' contains the code to compress
+  YOLO v3/Tiny YOLO v3 Darknet model by choosing compression factors for each layer. However the support can be easily extended to any other
+  backbone. Tucker decomposition is computed with the Python package 'tensorly' 
+- Support for model training/evaluation with the KITTI dataset. 
 
 
-#### Backbone
+#### Backbones
 - [x] CSPDarknet53
 - [x] Darknet53/Tiny Darknet
 - [x] Darknet19
@@ -23,7 +27,7 @@ In this repository the support for network compression with Tucker tensor decomp
 - [x] Xception
 - [x] VGG16
 
-#### Head
+#### Heads
 - [x] YOLOv4 (Lite)
 - [x] Tiny YOLOv4 (Lite, no-SPP, unofficial)
 - [x] YOLOv3 (Lite, SPP)
