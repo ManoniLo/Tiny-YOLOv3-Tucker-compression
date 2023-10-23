@@ -1,4 +1,4 @@
-# TF Keras YOLOv4/v3/v2 Modelset
+# Tiny YOLOv3 Darknet compression with Tucker decomposition
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
 
