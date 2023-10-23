@@ -12,7 +12,8 @@ models with several backbones.
 - Support for network compression with Tucker Tensor decomposition was added.  The folder 'yolo3_tucker' contains the code to compress
   YOLO v3/Tiny YOLO v3 Darknet model by choosing compression factors for each layer. However the support can be easily extended to any other
   backbone. Tucker decomposition is computed with the Python package 'tensorly' 
-- Support for model training/evaluation with the KITTI dataset. 
+- Support for model training/evaluation with the KITTI dataset.
+- Other YOLO-based model implementation is available like YOLOX and models suitable for real-time detection as YOLO-Lite and YOLO-Fastest.
 
 
 #### Backbones
@@ -39,12 +40,11 @@ models with several backbones.
 
 ## Quick Start
 
-1. Install requirements on Ubuntu 16.04/18.04:
+1. In order to install requirements on Ubuntu 16.04/18.04 use the file "new_requirements_tf_2.8.0.txt".
+   Library versions were migrated from the original 
 
 ```
-# apt install python3-opencv
-# pip install Cython
-# pip install -r requirements.txt
+# pip install -r new_requirements_tf_2.8.0.txt
 ```
 
 2. Download Related Darknet/YOLOv2/v3/v4 weights from [YOLO website](http://pjreddie.com/darknet/yolo/) and [AlexeyAB/darknet](https://github.com/AlexeyAB/darknet).
