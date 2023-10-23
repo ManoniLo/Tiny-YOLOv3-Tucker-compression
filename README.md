@@ -41,39 +41,39 @@ models with several backbones.
 ## Quick Start
 
 1. In order to install requirements on Ubuntu 16.04/18.04 use the file "new_requirements_tf_2.8.0.txt".
-   Library versions were migrated from the original 
+   Tensorflow version migrated to 2.8.0 together with many other libraries.
 
 ```
 # pip install -r new_requirements_tf_2.8.0.txt
 ```
 
-2. Download Related Darknet/YOLOv2/v3/v4 weights from [YOLO website](http://pjreddie.com/darknet/yolo/) and [AlexeyAB/darknet](https://github.com/AlexeyAB/darknet).
-3. Convert the Darknet YOLO model to a Keras model.
-4. Run YOLO detection on your image or video, default using Tiny YOLOv3 model.
+
+2. Download and convert backbones' pretrained weights similarly to the original repository
 
 ```
-# wget -O weights/darknet53.conv.74.weights https://pjreddie.com/media/files/darknet53.conv.74
-# wget -O weights/darknet19_448.conv.23.weights https://pjreddie.com/media/files/darknet19_448.conv.23
-# wget -O weights/yolov3.weights https://pjreddie.com/media/files/yolov3.weights
-# wget -O weights/yolov3-tiny.weights https://pjreddie.com/media/files/yolov3-tiny.weights
-# wget -O weights/yolov3-spp.weights https://pjreddie.com/media/files/yolov3-spp.weights
-# wget -O weights/yolov2.weights http://pjreddie.com/media/files/yolo.weights
-# wget -O weights/yolov2-voc.weights http://pjreddie.com/media/files/yolo-voc.weights
-# wget -O weights/yolov2-tiny.weights https://pjreddie.com/media/files/yolov2-tiny.weights
-# wget -O weights/yolov2-tiny-voc.weights https://pjreddie.com/media/files/yolov2-tiny-voc.weights
+wget --quiet -nc -O weights/darknet53.conv.74.weights https://pjreddie.com/media/files/darknet53.conv.74
+wget --quiet -nc -O weights/darknet19_448.conv.23.weights https://pjreddie.com/media/files/darknet19_448.conv.23
+wget --quiet -nc -O weights/yolov3.weights https://pjreddie.com/media/files/yolov3.weights
+wget --quiet -nc -O weights/yolov3-tiny.weights https://pjreddie.com/media/files/yolov3-tiny.weights
+#wget --quiet -nc -O weights/yolov3-spp.weights https://pjreddie.com/media/files/yolov3-spp.weights
+wget --quiet -nc -O weights/yolov2.weights http://pjreddie.com/media/files/yolo.weights
+wget --quiet -nc -O weights/yolov2-voc.weights http://pjreddie.com/media/files/yolo-voc.weights
+wget --quiet -nc -O weights/yolov2-tiny.weights https://pjreddie.com/media/files/yolov2-tiny.weights
+wget --quiet -nc -O weights/yolov2-tiny-voc.weights https://pjreddie.com/media/files/yolov2-tiny-voc.weights
+wget --quiet -nc -O weights/yolov4.weights https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
+#gdown --no-cookies --id 18jCwaL4SJ-jOvXrZNGHJ5yz44g9zi8Hm && mv csdarknet53-omega_final.weights weights/
+#gdown --no-cookies --id 1NQwz47cW0NUgy7L3_xOKaNEfLoQuq3EL && mv yolov4-csp.weights weights/
+wget --quiet -nc -O weights/yolo-fastest.weights https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/ModelZoo/yolo-fastest-1.1_coco/yolo-fastest-1.1.weights?raw=true
+wget --quiet -nc -O weights/yolo-fastest-xl.weights https://github.com/dog-qiuqiu/Yolo-Fastest/blob/master/ModelZoo/yolo-fastest-1.1_coco/yolo-fastest-1.1-xl.weights?raw=true
 
-### manually download csdarknet53-omega_final.weights from https://drive.google.com/open?id=18jCwaL4SJ-jOvXrZNGHJ5yz44g9zi8Hm
-# wget -O weights/yolov4.weights https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
-
-# python tools/model_converter/convert.py cfg/yolov3.cfg weights/yolov3.weights weights/yolov3.h5
-# python tools/model_converter/convert.py cfg/yolov3-tiny.cfg weights/yolov3-tiny.weights weights/yolov3-tiny.h5
-# python tools/model_converter/convert.py cfg/yolov3-spp.cfg weights/yolov3-spp.weights weights/yolov3-spp.h5
-# python tools/model_converter/convert.py cfg/yolov2.cfg weights/yolov2.weights weights/yolov2.h5
-# python tools/model_converter/convert.py cfg/yolov2-voc.cfg weights/yolov2-voc.weights weights/yolov2-voc.h5
-# python tools/model_converter/convert.py cfg/yolov2-tiny.cfg weights/yolov2-tiny.weights weights/yolov2-tiny.h5
-# python tools/model_converter/convert.py cfg/yolov2-tiny-voc.cfg weights/yolov2-tiny-voc.weights weights/yolov2-tiny-voc.h5
-# python tools/model_converter/convert.py cfg/darknet53.cfg weights/darknet53.conv.74.weights weights/darknet53.h5
-# python tools/model_converter/convert.py cfg/darknet19_448_body.cfg weights/darknet19_448.conv.23.weights weights/darknet19.h5
+python tools/model_converter/convert.py cfg/yolov3.cfg weights/yolov3.weights weights/yolov3.h5
+python tools/model_converter/convert.py cfg/yolov3-tiny.cfg weights/yolov3-tiny.weights weights/yolov3-tiny.h5
+#python tools/model_converter/convert.py cfg/yolov3-spp.cfg weights/yolov3-spp.weights weights/yolov3-spp.h5
+python tools/model_converter/convert.py cfg/yolov2.cfg weights/yolov2.weights weights/yolov2.h5
+python tools/model_converter/convert.py cfg/yolov2-voc.cfg weights/yolov2-voc.weights weights/yolov2-voc.h5
+python tools/model_converter/convert.py cfg/yolov2-tiny.cfg weights/yolov2-tiny.weights weights/yolov2-tiny.h5
+python tools/model_converter/convert.py cfg/yolov2-tiny-voc.cfg weights/yolov2-tiny-voc.weights weights/yolov2-tiny-voc.h5
+python tools/model_converter/convert.py cfg/darknet53.cfg weights/darknet53.conv.74.weights weights/darknet53.h5
 
 # python tools/model_converter/convert.py cfg/csdarknet53-omega.cfg weights/csdarknet53-omega_final.weights weights/cspdarknet53.h5
 
