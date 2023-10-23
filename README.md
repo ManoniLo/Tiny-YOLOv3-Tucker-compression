@@ -29,42 +29,6 @@ models with several backbones.
 - [x] YOLOv2 (Lite)
 - [x] Tiny YOLOv2 (Lite)
 
-#### Loss
-- [x] YOLOv3 loss
-- [x] YOLOv2 loss
-- [x] Binary focal classification loss
-- [x] Softmax focal classification loss
-- [x] GIoU localization loss
-- [x] DIoU localization loss ([paper](https://arxiv.org/abs/1911.08287))
-- [x] Binary focal loss for objectness (experimental)
-- [x] Label smoothing for classification loss
-
-#### Postprocess
-- [x] Numpy YOLOv3/v2 postprocess implementation
-- [x] TFLite/MNN C++ YOLOv3/v2 postprocess implementation
-- [x] tf.keras batch-wise YOLOv3/v2 postprocess layer
-- [x] DIoU-NMS bounding box postprocess (numpy/C++)
-- [x] SoftNMS bounding box postprocess (numpy)
-- [x] Eliminate grid sensitivity (numpy/C++, from [YOLOv4](https://arxiv.org/abs/2004.10934))
-- [x] WBF(Weighted-Boxes-Fusion) bounding box postprocess (numpy) ([paper](https://arxiv.org/abs/1910.13302))
-- [x] Cluster NMS family (Fast/Matrix/SPM/Weighted) bounding box postprocess (numpy) ([paper](https://arxiv.org/abs/2005.03572))
-
-#### Train tech
-- [x] Transfer training from imagenet
-- [x] Singlescale image input training
-- [x] Multiscale image input training
-- [x] Dynamic learning rate decay (Cosine/Exponential/Polynomial/PiecewiseConstant)
-- [x] Weights Average policy for optimizer (EMA/SWA/Lookahead, valid for TF-2.x with tfa)
-- [x] Mosaic data augmentation (from [YOLOv4](https://arxiv.org/abs/2004.10934))
-- [x] GridMask data augmentation ([paper](https://arxiv.org/abs/2001.04086))
-- [x] Multi anchors for single GT (from [YOLOv4](https://arxiv.org/abs/2004.10934))
-- [x] Pruned model training (only valid for TF 1.x)
-- [x] Multi-GPU training with SyncBatchNorm support (valid for TF-2.2 and later)
-
-#### On-device deployment
-- [x] Tensorflow-Lite Float32/UInt8 model inference
-- [x] MNN Float32/UInt8 model inference
-
 
 ## Quick Start
 
@@ -444,57 +408,6 @@ Some experiment on PascalVOC dataset and comparison:
 | [MobileNet-SSD](https://github.com/chuanqi305/MobileNet-SSD) | 300x300 | VOC07+12 | VOC07 | 68% |  |  | 22MB |  |  |
 | [Faster RCNN, VGG-16](https://github.com/ShaoqingRen/faster_rcnn) | ~1000x600 | VOC07+12 | VOC07 | 73.2% |  |  |  | 151ms | Caffe on Titan X |
 | [SSD,VGG-16](https://github.com/pierluigiferrari/ssd_keras) | 300x300 | VOC07+12 | VOC07	| 77.5% |  |  | 201MB | 39fps | Keras on Titan X |
-
-
-**NOTE**:
-1. mAP/AP is evaluated with "Weighted-Distance-Cluster-NMS" post process, which has better performance than Traditional NMS
-
-2. If you meet any model loading problem with these pretrained weights due to h5 format compatibility issue, try to run "Model dump" with it again to regenerate the inference model.
-
-
-### Demo
-1. [yolo.py](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/yolo.py)
-> * Demo script for trained model
-
-image detection mode
-```
-# python yolo.py --model_type=yolo3_mobilenet_lite --weights_path=model.h5 --anchors_path=configs/yolo3_anchors.txt --classes_path=configs/voc_classes.txt --model_image_size=416x416 --image
-```
-video detection mode
-```
-# python yolo.py --model_type=yolo3_mobilenet_lite --weights_path=model.h5 --anchors_path=configs/yolo3_anchors.txt --classes_path=configs/voc_classes.txt --model_image_size=416x416 --input=test.mp4
-```
-For video detection mode, you can use "input=0" to capture live video from web camera and "output=<video name>" to dump out detection result to another video
-
-### Tensorflow model convert
-Using [keras_to_tensorflow.py](https://github.com/david8862/keras-YOLOv3-model-set/tree/master/tools/model_converter/keras_to_tensorflow.py) to convert the tf.keras .h5 model to tensorflow frozen pb model:
-```
-# python keras_to_tensorflow.py
-    --input_model="path/to/keras/model.h5"
-    --output_model="path/to/save/model.pb"
-```
-
-### ONNX model convert
-Using [keras_to_onnx.py](https://github.com/david8862/keras-YOLOv3-model-set/tree/master/tools/model_converter/keras_to_onnx.py) to convert the tf.keras .h5 model to ONNX model:
-```
-### need to set environment TF_KERAS=1 for tf.keras model
-# export TF_KERAS=1
-# python keras_to_onnx.py
-    --keras_model_file="path/to/keras/model.h5"
-    --output_file="path/to/save/model.onnx"
-    --op_set=11
-```
-
-You can also use [eval.py](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/eval.py) to do evaluation on the pb & onnx inference model
-
-### Inference model deployment
-See [on-device inference](https://github.com/david8862/keras-YOLOv3-model-set/tree/master/inference) for TFLite & MNN model deployment
-
-
-### TODO
-- [ ] Gaussian YOLOv3 loss
-- [ ] support Quantization aware training
-- [ ] provide more imagenet pretrained backbone (e.g. shufflenet, shufflenetv2), see [Training backbone](https://github.com/david8862/keras-YOLOv3-model-set/tree/master/common/backbones/imagenet_training)
 
 
 ## Some issues to know
