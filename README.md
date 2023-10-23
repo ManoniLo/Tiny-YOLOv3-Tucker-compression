@@ -77,9 +77,6 @@ wget --quiet -nc -O weights/yolo-fastest-xl.weights https://github.com/dog-qiuqi
 python tools/model_converter/convert.py cfg/yolo-fastest.cfg weights/yolo-fastest.weights --fixed_input_shape weights/yolo-fastest.h5
 python tools/model_converter/convert.py cfg/yolo-fastest-xl.cfg weights/yolo-fastest-xl.weights --fixed_input_shape weights/yolo-fastest-xl.h5
 
-
-# python yolo.py --image
-# python yolo.py --input=<your video file>
 ```
 For other model, just do in a similar way, but specify different model type, weights path and anchor path with `--model_type`, `--weights_path` and `--anchors_path`.
 
@@ -98,76 +95,9 @@ For other model, just do in a similar way, but specify different model type, wei
     path/to/img1.jpg 50,100,150,200,0 30,50,200,120,3
     path/to/img2.jpg 120,300,250,600,2
     ...
+
     ```
-    1. For VOC style dataset, you can use [voc_annotation.py](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/tools/dataset_converter/voc_annotation.py) to convert original dataset to our annotation file:
-       ```
-       # cd tools/dataset_converter/ && python voc_annotation.py -h
-       usage: voc_annotation.py [-h] [--dataset_path DATASET_PATH] [--year YEAR]
-                                [--set SET] [--output_path OUTPUT_PATH]
-                                [--classes_path CLASSES_PATH] [--include_difficult]
-                                [--include_no_obj]
-
-       convert PascalVOC dataset annotation to txt annotation file
-
-       optional arguments:
-         -h, --help            show this help message and exit
-         --dataset_path DATASET_PATH
-                               path to PascalVOC dataset, default is ../../VOCdevkit
-         --year YEAR           subset path of year (2007/2012), default will cover
-                               both
-         --set SET             convert data set, default will cover train, val and
-                               test
-         --output_path OUTPUT_PATH
-                               output path for generated annotation txt files,
-                               default is ./
-         --classes_path CLASSES_PATH
-                               path to class definitions
-         --include_difficult   to include difficult object
-         --include_no_obj      to include no object image
-       ```
-       By default, the VOC convert script will try to go through both VOC2007/VOC2012 dataset dir under the dataset_path and generate train/val/test annotation file separately, like:
-       ```
-       2007_test.txt  2007_train.txt  2007_val.txt  2012_train.txt  2012_val.txt
-       ```
-       You can merge these train & val annotation file as your need. For example, following cmd will creat 07/12 combined trainval dataset:
-       ```
-       # cp 2007_train.txt trainval.txt
-       # cat 2007_val.txt >> trainval.txt
-       # cat 2012_train.txt >> trainval.txt
-       # cat 2012_val.txt >> trainval.txt
-       ```
-       P.S. You can use [LabelImg](https://github.com/tzutalin/labelImg) to annotate your object detection dataset with Pascal VOC XML format
-
-    2. For COCO style dataset, you can use [coco_annotation.py](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/tools/dataset_converter/coco_annotation.py) to convert original dataset to our annotation file:
-       ```
-       # cd tools/dataset_converter/ && python coco_annotation.py -h
-       usage: coco_annotation.py [-h] [--dataset_path DATASET_PATH]
-                                 [--output_path OUTPUT_PATH]
-                                 [--classes_path CLASSES_PATH] [--include_no_obj]
-                                 [--customize_coco]
-
-       convert COCO dataset annotation to txt annotation file
-
-       optional arguments:
-         -h, --help            show this help message and exit
-         --dataset_path DATASET_PATH
-                               path to MSCOCO dataset, default is ../../mscoco2017
-         --output_path OUTPUT_PATH
-                               output path for generated annotation txt files,
-                               default is ./
-         --classes_path CLASSES_PATH
-                               path to class definitions, default is
-                               ../configs/coco_classes.txt
-         --include_no_obj      to include no object image
-         --customize_coco      It is a user customize coco dataset. Will not follow
-                               standard coco class label
-
-       
-       ```
-       This script will try to convert COCO instances_train2017 and instances_val2017 under dataset_path. You can change the code for your dataset
-
-       ```
-    3. For KITTI style dataset, you can use [kitti_annotation.py]() to convert original dataset to our annotation file.
+    1. For KITTI style dataset, you can use [kitti_annotation.py]() to convert original dataset to our annotation file.
        To generate KITTI annotation files run the script kitti_annotation.py in the same folder which contains scripts to generate
        Pascal VOC and COCO annotations.
        ```
@@ -175,9 +105,9 @@ For other model, just do in a similar way, but specify different model type, wei
        #python3 kitti_annotation.py
    
 
-   If you want to download PascalVOC or COCO dataset, refer to [Dockerfile](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/Dockerfile) for cmd
+   If you want to download KITTI dataset for 2D object detection go to the following link https://www.cvlibs.net/datasets/kitti/eval_3dobject.php.
 
-   For class names file format, refer to  [coco_classes.txt](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/configs/coco_classes.txt)
+   For class names file format, refer to  [kitti_classes.txt]()
 
 1. If you're training YOLOv4/v3/v2 models with Darknet based backbones, make sure you have converted pretrain model weights as in [Quick Start](https://github.com/david8862/keras-YOLOv3-model-set#quick-start) part
 
