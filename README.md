@@ -97,12 +97,6 @@ models with several backbones.
 ```
 For other model, just do in a similar way, but specify different model type, weights path and anchor path with `--model_type`, `--weights_path` and `--anchors_path`.
 
-Image detection sample:
-
-<p align="center">
-  <img src="assets/dog_inference.jpg">
-  <img src="assets/kite_inference.jpg">
-</p>
 
 ## Guide of train/evaluate/demo
 
@@ -181,16 +175,27 @@ Image detection sample:
          --include_no_obj      to include no object image
          --customize_coco      It is a user customize coco dataset. Will not follow
                                standard coco class label
+
+       
        ```
        This script will try to convert COCO instances_train2017 and instances_val2017 under dataset_path. You can change the code for your dataset
+
+       ```
+    3. For KITTI style dataset, you can use [kitti_annotation.py]() to convert original dataset to our annotation file.
+       To generate KITTI annotation files run the script kitti_annotation.py in the same folder which contains scripts to generate
+       Pascal VOC and COCO annotations.
+       ```
+       #cd tools/dataset_converter
+       #python3 kitti_annotation.py
+   
 
    If you want to download PascalVOC or COCO dataset, refer to [Dockerfile](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/Dockerfile) for cmd
 
    For class names file format, refer to  [coco_classes.txt](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/configs/coco_classes.txt)
 
-2. If you're training YOLOv4/v3/v2 models with Darknet based backbones, make sure you have converted pretrain model weights as in [Quick Start](https://github.com/david8862/keras-YOLOv3-model-set#quick-start) part
+1. If you're training YOLOv4/v3/v2 models with Darknet based backbones, make sure you have converted pretrain model weights as in [Quick Start](https://github.com/david8862/keras-YOLOv3-model-set#quick-start) part
 
-3. [train.py](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/train.py)
+2. [train.py](https://github.com/david8862/keras-YOLOv3-model-set/blob/master/train.py)
 ```
 # python train.py -h
 usage: train.py [-h] [--model_type MODEL_TYPE] [--anchors_path ANCHORS_PATH]
